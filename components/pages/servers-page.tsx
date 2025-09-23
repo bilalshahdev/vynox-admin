@@ -1,0 +1,204 @@
+// app/ServersPage.tsx
+"use client";
+
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { TableCell } from "@/components/ui/table";
+import { useDeleteServer, useGetServers } from "@/hooks/useServers";
+import { getCountryFlag } from "@/lib/countries";
+import { ServerFlat, ServerMode } from "@/types/api.types";
+import {
+  Crown,
+  Globe,
+  Power,
+  Search,
+  Smartphone,
+  Tablet,
+  TestTube,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import TableActions from "../Actions";
+import { DataTable } from "../DataTable";
+import { SearchInput } from "../SearchInput"; // your debounced input
+
+export function ServersPage() {
+  const [page, setPage] = useState(1);
+  const [osFilter, setOsFilter] = useState<string>("all");
+  const [modeFilter, setModeFilter] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Reset page when filters/search change
+  useEffect(() => {
+    setPage(1);
+  }, [osFilter, modeFilter, searchTerm]);
+
+  // Build query params for API
+  const query = useMemo(() => {
+    return {
+      page,
+      limit: 10,
+      os_type: osFilter === "all" ? undefined : (osFilter as "android" | "ios"),
+      mode: modeFilter === "all" ? undefined : (modeFilter as ServerMode),
+      search: searchTerm || undefined,
+    };
+  }, [page, osFilter, modeFilter, searchTerm]);
+
+  const { data, isLoading, error } = useGetServers(query);
+  const { mutateAsync: deleteServer, isPending } = useDeleteServer();
+
+  const {
+    pagination: { total = 0, limit = 10 } = { total: 0, limit: 10 },
+    data: servers = [],
+  } = data ?? { pagination: { total: 0, limit: 10 } };
+
+  const handleDeleteServer = async (serverId: string) => {
+    await deleteServer(serverId);
+  };
+
+  const cols = ["server", "location", "os", "mode", "pro", "ip", "actions"];
+
+  const rows = (server: ServerFlat) => {
+    return (
+      <>
+        <TableCell className="font-medium">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-vynox-primary/10">
+              <Globe className="h-4 w-4 text-vynox-primary" />
+            </div>
+            {server.name}
+          </div>
+        </TableCell>
+
+        <TableCell>
+          <div className="flex items-center gap-2">
+            <span className="text-lg">
+              {getCountryFlag(server.country_code)}
+            </span>
+            <div>
+              <div className="font-medium">{server.city}</div>
+              <div className="text-sm text-muted-foreground">
+                {server.country}
+              </div>
+            </div>
+          </div>
+        </TableCell>
+
+        <TableCell>
+          <div className="flex items-center gap-1">
+            {server.os_type === "android" ? (
+              <Smartphone className="h-4 w-4 text-green-600" />
+            ) : (
+              <Tablet className="h-4 w-4 text-blue-600" />
+            )}
+            <span className="capitalize">{server.os_type}</span>
+          </div>
+        </TableCell>
+
+        <TableCell>
+          <Badge
+            variant={server.mode === "live" ? "default" : "secondary"}
+            className={
+              server.mode === "live" ? "bg-green-100 text-green-800" : ""
+            }
+          >
+            {server.mode === "live" ? (
+              <Power className="mr-1 h-3 w-3" />
+            ) : (
+              <TestTube className="mr-1 h-3 w-3" />
+            )}
+            {server.mode}
+          </Badge>
+        </TableCell>
+
+        <TableCell>
+          {server.is_pro ? (
+            <Badge className="bg-yellow-100 text-yellow-800">
+              <Crown className="mr-1 h-3 w-3" />
+              Pro
+            </Badge>
+          ) : (
+            <Badge variant="outline">Free</Badge>
+          )}
+        </TableCell>
+
+        <TableCell className="font-mono text-sm">{server.ip}</TableCell>
+
+        <TableCell className="text-right">
+          <TableActions
+            id={server._id}
+            baseRoute="/servers"
+            actions={["edit", "delete"]}
+            onDelete={(id) => handleDeleteServer(id)}
+          />
+        </TableCell>
+      </>
+    );
+  };
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-full">Loading...</div>;
+  }
+
+  return (
+    <div className="space-y-8 h-full">
+      <div className="flex rounded-lg flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-1 items-center gap-3">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            {/* Use your debounced SearchInput */}
+            <SearchInput
+              placeholder="Search servers, locations..."
+              onChange={(val) => setSearchTerm(val)}
+              debounceDelay={500}
+              className="pl-8 h-11 bg-muted"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Select value={osFilter} onValueChange={setOsFilter}>
+            <SelectTrigger className="w-36 h-11">
+              <SelectValue placeholder="OS Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All OS</SelectItem>
+              <SelectItem value="android">Android</SelectItem>
+              <SelectItem value="ios">iOS</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={modeFilter} onValueChange={setModeFilter}>
+            <SelectTrigger className="w-36 h-11">
+              <SelectValue placeholder="Mode" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Modes</SelectItem>
+              <SelectItem value="live">Live</SelectItem>
+              <SelectItem value="test">Test</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-border/50 overflow-hidden">
+        <DataTable
+          data={servers}
+          cols={cols}
+          row={rows}
+          pagination={{
+            total,
+            limit,
+            page,
+            setPage,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
