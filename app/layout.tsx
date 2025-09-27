@@ -1,15 +1,12 @@
-import type React from "react";
-import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
-import { Analytics } from "@vercel/analytics/next";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Suspense } from "react";
-import "./globals.css";
+import AuthGuard from "@/components/AuthGuard";
+import Providers from "@/components/Providers";
+import ResponseError from "@/components/ResponseError";
 import { baseUrl } from "@/config/constants";
-import ReactQueryProvider from "@/components/query-provider";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { Toaster } from "sonner";
+import { GeistMono } from "geist/font/mono";
+import { GeistSans } from "geist/font/sans";
+import type { Metadata } from "next";
+import type React from "react";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "VynoxVPN Admin Dashboard",
@@ -28,7 +25,7 @@ export default async function RootLayout({
     error = "❌ No Base URL provided.";
   } else {
     try {
-      const res = await fetch(baseUrl, {
+      const res = await fetch(`${baseUrl}/api/v1`, {
         method: "GET",
         cache: "no-store",
       });
@@ -47,22 +44,17 @@ export default async function RootLayout({
     }
   }
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html suppressHydrationWarning>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <Suspense fallback={null}>
-          <ReactQueryProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="light"
-              enableSystem
-              storageKey="vynox-theme"
-            >
-              <Toaster />
-              <DashboardLayout>{children}</DashboardLayout>
-            </ThemeProvider>
-          </ReactQueryProvider>{" "}
-          <Analytics />
-        </Suspense>
+        {error ? (
+          <ResponseError className="h-screen" error={error} />
+        ) : (
+          <Providers>
+            <AuthGuard>
+              <main>{children}</main>
+            </AuthGuard>
+          </Providers>
+        )}
       </body>
     </html>
   );

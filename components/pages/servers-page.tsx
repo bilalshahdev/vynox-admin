@@ -43,7 +43,7 @@ export function ServersPage() {
     return {
       page,
       limit: 10,
-      os_type: osFilter === "all" ? undefined : (osFilter as "android" | "ios"),
+      os_type: osFilter === "all" ? undefined : (osFilter as "android" | "ios" | "both"),
       mode: modeFilter === "all" ? undefined : (modeFilter as ServerMode),
       search: searchTerm || undefined,
     };
@@ -170,6 +170,7 @@ export function ServersPage() {
               <SelectItem value="all">All OS</SelectItem>
               <SelectItem value="android">Android</SelectItem>
               <SelectItem value="ios">iOS</SelectItem>
+              <SelectItem value="both">Both</SelectItem>
             </SelectContent>
           </Select>
 

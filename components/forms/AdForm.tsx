@@ -21,25 +21,14 @@ import Selectable from "./fields/Selectable";
 import { useAddAd, useGetAd, useUpdateAd } from "@/hooks/useAds";
 import { adSchema } from "@/lib/validation";
 import type { z } from "zod";
+import { useGetDropdownByName } from "@/hooks/useDropdowns";
 
 type AdFormValues = z.infer<typeof adSchema>;
-
-const AD_TYPES = [
-  { value: "banner", label: "Banner" },
-  { value: "interstitial", label: "Interstitial" },
-  { value: "reward", label: "Reward" },
-] as const;
-
-const AD_POSITIONS = [
-  { value: "home", label: "Home Screen" },
-  { value: "splash", label: "Splash Screen" },
-  { value: "server", label: "Server List" },
-  { value: "report", label: "Report Page" },
-] as const;
 
 const PLATFORMS = [
   { value: "android", label: "Android" },
   { value: "ios", label: "iOS" },
+  { value: "both", label: "Both" },
 ] as const;
 
 export function AdForm({ id }: { id?: string }) {
@@ -52,13 +41,52 @@ export function AdForm({ id }: { id?: string }) {
     isFetching: isAdFetching,
   } = useGetAd(id ?? "", isEdit);
 
+  const {
+    data: adTypesResp,
+    isLoading: isAdTypesLoading,
+    isFetching: isAdTypesFetching,
+  } = useGetDropdownByName("adTypes");
+
+  const {
+    data: adPositionsResp,
+    isLoading: isAdPositionsLoading,
+    isFetching: isAdPositionsFetching,
+  } = useGetDropdownByName("adPositions");
+
   const ad = adResp?.data;
 
   const addAd = useAddAd();
   const updateAd = useUpdateAd();
 
+  // Map server dropdown payload → {label, value}
+  const adTypeOptions = useMemo(
+    () =>
+      (adTypesResp?.data?.values ?? []).map(
+        (v: { name: string; value: string }) => ({
+          label: v.name,
+          value: v.value,
+        })
+      ),
+    [adTypesResp]
+  );
+
+  const adPositionOptions = useMemo(
+    () =>
+      (adPositionsResp?.data?.values ?? []).map(
+        (v: { name: string; value: string }) => ({
+          label: v.name,
+          value: v.value,
+        })
+      ),
+    [adPositionsResp]
+  );
+
+  const hasAdTypeOptions = adTypeOptions.length > 0;
+  const hasAdPositionOptions = adPositionOptions.length > 0;
+
   const defaultValues = useMemo<AdFormValues>(
     () => ({
+      // These will be auto-updated to first server option (if any) below for create flow
       type: "banner",
       position: "home",
       os_type: "android",
@@ -70,16 +98,23 @@ export function AdForm({ id }: { id?: string }) {
 
   const {
     control,
-    register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    getValues,
+    setValue,
   } = useForm<AdFormValues>({
     resolver: zodResolver(adSchema),
     defaultValues,
     mode: "onSubmit",
     reValidateMode: "onBlur",
   });
+
+  /**
+   * Edit flow: when ad loads, seed the form with the server entity.
+   * We intentionally DO NOT force-match to current dropdown lists; the
+   * existing value may be legacy but should still be visible/preserved.
+   */
   useEffect(() => {
     if (isEdit && ad && !isAdLoading) {
       reset({
@@ -91,6 +126,38 @@ export function AdForm({ id }: { id?: string }) {
       });
     }
   }, [isEdit, ad, isAdLoading, reset]);
+
+  useEffect(() => {
+    if (!isEdit) {
+      const currentType = getValues("type");
+      const currentPos = getValues("position");
+
+      if (hasAdTypeOptions) {
+        const currentInList = adTypeOptions.some(
+          (o) => o.value === currentType
+        );
+        if (!currentInList)
+          setValue("type", adTypeOptions[0].value, { shouldValidate: true });
+      }
+      if (hasAdPositionOptions) {
+        const currentInList = adPositionOptions.some(
+          (o) => o.value === currentPos
+        );
+        if (!currentInList)
+          setValue("position", adPositionOptions[0].value, {
+            shouldValidate: true,
+          });
+      }
+    }
+  }, [
+    isEdit,
+    adTypeOptions,
+    adPositionOptions,
+    hasAdTypeOptions,
+    hasAdPositionOptions,
+    getValues,
+    setValue,
+  ]);
 
   const onSubmit = async (values: AdFormValues) => {
     if (isEdit && id) {
@@ -112,8 +179,41 @@ export function AdForm({ id }: { id?: string }) {
     }
   };
 
+  const loadingDropdowns =
+    isAdTypesLoading ||
+    isAdTypesFetching ||
+    isAdPositionsLoading ||
+    isAdPositionsFetching;
+
   const submitting =
-    isSubmitting || addAd.isPending || updateAd.isPending || isAdFetching;
+    isSubmitting ||
+    addAd.isPending ||
+    updateAd.isPending ||
+    isAdFetching ||
+    loadingDropdowns;
+
+  const EmptyNotice = ({
+    title,
+    what,
+  }: {
+    title: string;
+    what: "adTypes" | "adPositions";
+  }) => (
+    <div
+    role="alert"
+    className="
+      rounded-md border border-dashed p-3 text-sm
+      border-amber-300 bg-amber-50 text-amber-900
+      dark:border-amber-600 dark:bg-amber-900/30 dark:text-amber-100
+    "
+  >
+    <div className="font-medium">No Type options found</div>
+    <div className="mt-1">
+      No options configured. Please add values in the admin dropdowns.
+    </div>
+  </div>
+  
+  );
 
   return (
     <div className="w-full">
@@ -129,6 +229,7 @@ export function AdForm({ id }: { id?: string }) {
           </CardHeader>
 
           <CardContent className="space-y-4">
+            {/* Status */}
             <div className="flex items-center space-x-2 pt-2">
               <Controller
                 name="status"
@@ -148,14 +249,16 @@ export function AdForm({ id }: { id?: string }) {
               />
             </div>
 
+            {/* Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Platform (static) */}
               <Controller
                 name="os_type"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                   <Selectable
                     label="Platform"
-                    placeholder="Select os_type"
+                    placeholder="Select platform"
                     options={PLATFORMS as any}
                     value={value}
                     onChange={(v: string) => onChange(v)}
@@ -164,6 +267,8 @@ export function AdForm({ id }: { id?: string }) {
                   />
                 )}
               />
+
+              {/* Ad Unit ID */}
               <Controller
                 name="ad_id"
                 control={control}
@@ -186,43 +291,75 @@ export function AdForm({ id }: { id?: string }) {
                 )}
               />
 
+              {/* Type (from server) */}
               <Controller
                 name="type"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                   <Selectable
                     label="Type"
-                    placeholder="Select type"
-                    options={AD_TYPES as any}
+                    placeholder={
+                      loadingDropdowns
+                        ? "Loading..."
+                        : hasAdTypeOptions
+                        ? "Select type"
+                        : "No options available"
+                    }
+                    options={adTypeOptions as any}
                     value={value}
                     onChange={(v: string) => onChange(v)}
                     errors={{ type: errors.type?.message ?? "" }}
-                    disabled={submitting}
+                    disabled={submitting || !hasAdTypeOptions}
                   />
                 )}
               />
 
+              {/* Position (from server) */}
               <Controller
                 name="position"
                 control={control}
                 render={({ field: { value, onChange } }) => (
                   <Selectable
                     label="Position"
-                    placeholder="Select position"
-                    options={AD_POSITIONS as any}
+                    placeholder={
+                      loadingDropdowns
+                        ? "Loading..."
+                        : hasAdPositionOptions
+                        ? "Select position"
+                        : "No options available"
+                    }
+                    options={adPositionOptions as any}
                     value={value}
                     onChange={(v: string) => onChange(v)}
                     errors={{ position: errors.position?.message ?? "" }}
-                    disabled={submitting}
+                    disabled={submitting || !hasAdPositionOptions}
                   />
                 )}
               />
             </div>
+
+            {/* Admin-facing notices when no options are configured */}
+            {!loadingDropdowns && !hasAdTypeOptions && (
+              <EmptyNotice title="No Type options found" what="adTypes" />
+            )}
+            {!loadingDropdowns && !hasAdPositionOptions && (
+              <EmptyNotice
+                title="No Position options found"
+                what="adPositions"
+              />
+            )}
           </CardContent>
         </Card>
 
         <div className="flex justify-end gap-2 pt-4">
-          <Button type="submit" disabled={submitting} variant="default">
+          <Button
+            type="submit"
+            disabled={
+              submitting ||
+              (!isEdit && (!hasAdTypeOptions || !hasAdPositionOptions))
+            }
+            variant="default"
+          >
             {submitting
               ? isEdit
                 ? "Updating..."

@@ -6,6 +6,9 @@ import {
   getDropdownByName,
   getDropdowns,
   updateDropdown,
+  addDropdownValue,
+  updateDropdownValue,
+  removeDropdownValue,
 } from "@/services/dropdowns";
 import type { ListDropdownsQuery } from "@/types/api.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -75,5 +78,63 @@ export const useDeleteDropdown = () => {
     },
     onError: (e: any) =>
       toast.error(e?.response?.data?.message || "Failed to delete dropdown"),
+  });
+};
+
+export const useAddDropdownValue = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: { name: string; value: string };
+    }) => addDropdownValue(id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["dropdowns"], exact: false });
+    },
+    onError: (e: any) =>
+      toast.error(e?.response?.data?.message || "Failed to add dropdown value"),
+  });
+};
+
+export const useUpdateDropdownValue = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: { name: string; value: string };
+    }) => updateDropdownValue(id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["dropdowns"], exact: false });
+    },
+    onError: (e: any) =>
+      toast.error(
+        e?.response?.data?.message || "Failed to update dropdown value"
+      ),
+  });
+};
+
+export const useRemoveDropdownValue = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: { name: string; value: string };
+    }) => removeDropdownValue(id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["dropdowns"], exact: false });
+    },
+    onError: (e: any) =>
+      toast.error(
+        e?.response?.data?.message || "Failed to remove dropdown value"
+      ),
   });
 };

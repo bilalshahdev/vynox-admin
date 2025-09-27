@@ -50,3 +50,18 @@ export const deleteDropdown = async (id: string) => {
   const res = await api.delete(`/dropdowns/${id}`);
   return res.data;
 };
+
+export const addDropdownValue = async (id: string, data: { name: string; value: string }) => {
+  const res = await api.patch(`/dropdowns/${id}/values/add`, data);
+  return res.data;
+};
+
+export const updateDropdownValue = async (id: string, data: { name: string; value: string }) => {
+  const res = await api.patch(`/dropdowns/${id}/values/update`, data);
+  return res.data;
+};
+
+export const removeDropdownValue = async (id: string, data: { name: string; value: string }) => {
+  const res = await api.patch(`/dropdowns/${id}/values/remove`, data);
+  return res.data;
+};

@@ -1,5 +1,7 @@
 // VynoxVPN API Types based on OpenAPI specification
 
+import { OSType } from "@/types/api.types"
+
 export interface Server {
   _id: string
   general: {
@@ -34,7 +36,7 @@ export interface Ad {
   position: "home" | "splash" | "server" | "report"
   status: boolean
   ad_id?: string
-  os_type: "android" | "ios"
+  os_type: OSType
   created_at: string
   updated_at: string
 }

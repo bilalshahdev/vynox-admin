@@ -11,7 +11,7 @@ export const serverSchema = z.object({
   city: z.string().min(1, "City is required"),
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),
-  os_type: z.enum(["android", "ios"]),
+  os_type: z.enum(["android", "ios", "both"]),
   is_pro: z.boolean(),
   mode: z.enum(["test", "live"]),
   categories: z.array(z.string()),
@@ -23,9 +23,9 @@ export const serverSchema = z.object({
 });
 
 export const adSchema = z.object({
-  type: z.enum(["banner", "interstitial", "reward"]),
-  position: z.enum(["home", "splash", "server", "report"]),
-  os_type: z.enum(["android", "ios"]),
+  type: z.string().min(1, "Type is required"),
+  position: z.string().min(1, "Position is required"),
+  os_type: z.enum(["android", "ios", "both"]),
   status: z.boolean(),
   ad_id: z.string().min(1, "Ad unit ID is required"),
 });

@@ -2,12 +2,12 @@
 export type ISODateString = string;
 
 /* ===== Shared Enums ===== */
-export type OSType = "android" | "ios";
+export type OSType = "android" | "ios" | "both";
 export type ServerMode = "test" | "live";
 export type ServerCategory = "gaming" | "streaming";
 
-export type AdType = "banner" | "interstitial" | "reward";
-export type AdPosition = "home" | "splash" | "server" | "report";
+export type AdType = string;
+export type AdPosition = string;
 
 /* ===== API Wrappers ===== */
 export interface Pagination {
@@ -144,8 +144,8 @@ export type MutateServerResponse = ApiSuccessItem<ServerDoc>;
 
 export interface Ad {
   _id: string;
-  type: AdType;
-  position: AdPosition;
+  type: string;
+  position: string;
   status: boolean;
   os_type: OSType;
   ad_id?: string;

@@ -31,7 +31,7 @@ export function AdsPage() {
     return {
       page,
       limit: 10,
-      os_type: osFilter === "all" ? undefined : (osFilter as "android" | "ios"),
+      os_type: osFilter === "all" ? undefined : (osFilter as "android" | "ios" | "both"),
       status:
         statusFilter === "all"
           ? undefined
@@ -69,6 +69,12 @@ export function AdsPage() {
             )}
             {ad.os_type === "ios" && (
               <Tablet className="h-4 w-4 text-cyan-600" />
+            )}
+            {ad.os_type === "both" && (
+              <div className="flex items-center gap-1">
+                <Smartphone className="h-4 w-4 text-green-600" />
+                <Tablet className="h-4 w-4 text-cyan-600" />
+              </div>
             )}
 
             <span className="capitalize">{ad.os_type}</span>

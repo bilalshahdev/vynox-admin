@@ -19,13 +19,15 @@ import {
   useGetServer,
   useUpdateServer,
 } from "@/hooks/useServers";
-import { countries, getCitiesForCountry } from "@/lib/countries-cities";
+import { useWorldLocations } from "@/hooks/useWorldLocations";
 import { serverSchema } from "@/lib/validation";
+import { OSType } from "@/types/api.types";
 import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import Selectable from "./fields/Selectable";
+import { useGetDropdownByName } from "@/hooks/useDropdowns";
 
 type FormState = {
   /** General */
@@ -37,7 +39,7 @@ type FormState = {
   ip: string;
   latitude: number;
   longitude: number;
-  os_type: "android" | "ios";
+  os_type: OSType;
   is_pro: boolean;
   mode: "test" | "live";
   /** OpenVPN (flat for UI; mapped on submit) */
@@ -72,17 +74,34 @@ export function ServerForm({ id }: { id?: string }) {
   const router = useRouter();
   const isEdit = Boolean(id);
 
-  // Fetch existing server (for edit)
   const { data: serverResp } = useGetServer(id ?? "", { enabled: isEdit });
-  const server = serverResp?.data; // assuming API returns { success, data }
+  const server = serverResp?.data;
 
   const [formData, setFormData] = useState<FormState>(EMPTY_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [selectedCountry, setSelectedCountry] = useState("");
+
+  const { countries, getCitiesOfCountry, countryNameByCode, ready } =
+    useWorldLocations();
+
+    // const {} = useGetDropdownByName("")
+
+  const countryOptions = useMemo(
+    () => countries.map((c) => ({ value: c.isoCode, label: c.name })),
+    [countries]
+  );
+
+  const [selectedCountryCode, setSelectedCountryCode] = useState<string>("");
+
+  const [cityOptions, setCityOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+
+  const [cityByKey, setCityByKey] = useState<Record<string, any>>({});
 
   useEffect(() => {
     if (!server) return;
-    // Map flattened shape from your service.getById -> UI form state
+    const iso2 = server.country_code || "";
+
     setFormData({
       name: server.name,
       categories: server.categories ?? [],
@@ -101,14 +120,61 @@ export function ServerForm({ id }: { id?: string }) {
       wireguard_address: server.wireguard_config?.address ?? "",
       wireguard_config: server.wireguard_config?.config ?? "",
     });
-    setSelectedCountry(server.country_code || "");
-  }, [server]);
+    setSelectedCountryCode(iso2);
+  }, [server, countryNameByCode]);
 
-  // Derived city list
-  const availableCities = useMemo(
-    () => (selectedCountry ? getCitiesForCountry(selectedCountry) : []),
-    [selectedCountry]
-  );
+  useEffect(() => {
+    if (!selectedCountryCode) {
+      setCityOptions([]);
+      setCityByKey({});
+      return;
+    }
+    let mounted = true;
+    (async () => {
+      const cities = await getCitiesOfCountry(selectedCountryCode);
+      if (!mounted) return;
+
+      const map: Record<string, any> = {};
+      const opts = cities.map((c) => {
+        const key = `${c.name}__${c.stateCode ?? ""}__${c.countryCode}`;
+        map[key] = c;
+
+        const label = c.stateCode ? `${c.name} (${c.stateCode})` : c.name;
+        return { value: key, label };
+      });
+
+      setCityByKey(map);
+      setCityOptions(opts);
+
+      if (server?.city && !formData.latitude && !formData.longitude) {
+        const found = opts.find(
+          (o) =>
+            o.label.startsWith(server.city + " ") || o.label === server.city
+        );
+        if (found) {
+          const city = map[found.value];
+          setFormData((p) => ({
+            ...p,
+            city: city.name,
+            latitude: parseFloat(city.latitude) || 0,
+            longitude: parseFloat(city.longitude) || 0,
+          }));
+        }
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, [selectedCountryCode, getCitiesOfCountry]);
+
+  const selectedCityValue = useMemo(() => {
+    if (!formData.city) return undefined; // keep placeholder
+    const entry = Object.entries(cityByKey).find(
+      ([, c]) => c.name === formData.city
+    );
+    return entry?.[0]; // the key we constructed for the option.value
+  }, [formData.city, cityByKey]);
 
   const { mutateAsync: addServer, isPending: adding } = useAddServer();
   const { mutateAsync: editServer, isPending: updating } = useUpdateServer();
@@ -127,12 +193,18 @@ export function ServerForm({ id }: { id?: string }) {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
-      const validated = serverSchema.parse(formData); // zod validates UI shape
+      const validated = serverSchema.parse({
+        ...formData,
+
+        country_code: selectedCountryCode,
+        country:
+          formData.country ||
+          (selectedCountryCode ? countryNameByCode[selectedCountryCode] : ""),
+      });
+
       setErrors({});
 
-      // Map to API payload shape
       const payload: any = {
         general: {
           name: validated.name,
@@ -170,12 +242,11 @@ export function ServerForm({ id }: { id?: string }) {
       } else {
         await addServer(payload);
         setFormData(EMPTY_FORM);
-        setSelectedCountry("");
+        setSelectedCountryCode("");
         startTransition(() => router.replace("/servers"));
       }
       router.refresh();
     } catch (err: any) {
-      // zod or server errors
       if (err?.errors) {
         const next: Record<string, string> = {};
         err.errors.forEach((z: any) => {
@@ -188,7 +259,6 @@ export function ServerForm({ id }: { id?: string }) {
       toast.error(err?.response?.data?.message || "Something went wrong");
     }
   };
-
   return (
     <div className="w-full">
       <form onSubmit={handleFormSubmit} className="space-y-6">
@@ -243,30 +313,67 @@ export function ServerForm({ id }: { id?: string }) {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
+                  {/* Country (ISO2) */}
                   <Selectable
                     label="Country"
-                    placeholder="Select country"
-                    options={countries.map((country) => ({
-                      value: country.name,
-                      label: country.name,
-                    }))}
-                    value={formData.country}
-                    onChange={(v: string) => setFormData((p) => ({ ...p, country: v }))}
+                    placeholder={
+                      ready ? "Select country" : "Loading countries..."
+                    }
+                    options={countryOptions}
+                    value={selectedCountryCode}
+                    disabled={!ready}
+                    onChange={(iso2: string) => {
+                      const name = iso2 ? countryNameByCode[iso2] : "";
+                      setSelectedCountryCode(iso2);
+                      setCityOptions([]);
+                      setCityByKey({});
+                      setFormData((p) => ({
+                        ...p,
+                        country_code: iso2,
+                        country: name,
+                        city: "",
+                        latitude: 0,
+                        longitude: 0,
+                      }));
+                    }}
                     errors={errors}
                   />
+
                   <Selectable
                     label="City"
-                    placeholder="Select city"
-                    options={availableCities.map((city) => ({
-                      value: city,
-                      label: city,
-                    }))}
-                    value={formData.city}
-                    onChange={(v: string) => setFormData((p) => ({ ...p, city: v }))}
+                    placeholder={
+                      selectedCountryCode
+                        ? cityOptions.length
+                          ? "Select city"
+                          : "Loading cities..."
+                        : "Select country first"
+                    }
+                    options={cityOptions}
+                    value={selectedCityValue} // <-- undefined when none selected
+                    onChange={(key: string) => {
+                      const city = cityByKey[key];
+                      if (!city) {
+                        setFormData((p) => ({
+                          ...p,
+                          city: "",
+                          latitude: 0,
+                          longitude: 0,
+                        }));
+                        return;
+                      }
+                      setFormData((p) => ({
+                        ...p,
+                        city: city.name,
+                        latitude: parseFloat(city.latitude) || 0,
+                        longitude: parseFloat(city.longitude) || 0,
+                      }));
+                    }}
+                    disabled={!formData.country_code}
                     errors={errors}
                   />
                 </div>
 
+                {/* Latitude / Longitude reflect selection but remain editable */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="latitude">Latitude</Label>
@@ -281,6 +388,7 @@ export function ServerForm({ id }: { id?: string }) {
                           latitude: Number.parseFloat(e.target.value),
                         }))
                       }
+                      disabled={!formData.city}
                       placeholder="50.1109"
                       className={errors.latitude ? "border-red-500" : ""}
                     />
@@ -301,6 +409,7 @@ export function ServerForm({ id }: { id?: string }) {
                           longitude: Number.parseFloat(e.target.value),
                         }))
                       }
+                      disabled={!formData.city}
                       placeholder="8.6821"
                       className={errors.longitude ? "border-red-500" : ""}
                     />
@@ -346,6 +455,7 @@ export function ServerForm({ id }: { id?: string }) {
                     options={[
                       { value: "android", label: "Android" },
                       { value: "ios", label: "iOS" },
+                      { value: "both", label: "Both" },
                     ]}
                     value={formData.os_type}
                     onChange={(value: string) =>

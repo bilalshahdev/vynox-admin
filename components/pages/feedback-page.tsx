@@ -111,6 +111,7 @@ export default function FeedbackPage() {
               <SelectItem value="all">All OS</SelectItem>
               <SelectItem value="android">Android</SelectItem>
               <SelectItem value="ios">iOS</SelectItem>
+              <SelectItem value="both">Both</SelectItem>
             </SelectContent>
           </Select>
           <Select value={ratingFilter} onValueChange={setRatingFilter}>
