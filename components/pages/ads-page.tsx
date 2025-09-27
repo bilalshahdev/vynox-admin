@@ -9,13 +9,13 @@ import {
 } from "@/components/ui/select";
 import { TableCell } from "@/components/ui/table";
 import { useDeleteAd, useGetAds } from "@/hooks/useAds";
-import type { Ad } from "@/lib/types";
 import { Eye, EyeOff, Smartphone, Tablet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import TableActions from "../Actions";
 import { DataTable } from "../DataTable";
 import Loading from "../Loading";
 import { Badge } from "../ui/badge";
+import { Ad } from "@/types/api.types";
 
 export function AdsPage() {
   const [page, setPage] = useState(1);
@@ -31,7 +31,10 @@ export function AdsPage() {
     return {
       page,
       limit: 10,
-      os_type: osFilter === "all" ? undefined : (osFilter as "android" | "ios" | "both"),
+      os_type:
+        osFilter === "all"
+          ? undefined
+          : (osFilter as "android" | "ios" | "both"),
       status:
         statusFilter === "all"
           ? undefined
