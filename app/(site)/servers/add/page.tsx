@@ -1,10 +1,10 @@
 import Container from "@/components/Container";
-import { ServerForm } from "@/components/forms/ServerForm";
+import TestServerForm from "@/components/forms/ServerForm";
 
 const AddFormPage = () => {
   return (
     <Container title="Add Server">
-      <ServerForm />
+      <TestServerForm />
     </Container>
   );
 };

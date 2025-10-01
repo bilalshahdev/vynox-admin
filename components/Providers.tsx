@@ -1,9 +1,9 @@
+"use client";
 import { Toaster } from "sonner";
-import { DashboardLayout } from "./layout/dashboard-layout";
 import ReactQueryProvider from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
 
-const Providers = async ({ children }: { children: React.ReactNode }) => {
+const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
       <ReactQueryProvider>

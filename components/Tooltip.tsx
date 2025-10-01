@@ -12,12 +12,12 @@ interface TooltipProps {
   asChild?: boolean;
 }
 
-const Tooltip = ({ children, content, asChild }: TooltipProps) => {
+const Tooltip = ({ children, content }: TooltipProps) => {
   return (
     <TooltipProvider>
       <TooltipComponent>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
-        <TooltipContent>{content}</TooltipContent>
+        <TooltipContent className="max-w-52" align="start">{content}</TooltipContent>
       </TooltipComponent>
     </TooltipProvider>
   );

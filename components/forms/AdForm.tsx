@@ -28,7 +28,6 @@ type AdFormValues = z.infer<typeof adSchema>;
 const PLATFORMS = [
   { value: "android", label: "Android" },
   { value: "ios", label: "iOS" },
-  { value: "both", label: "Both" },
 ] as const;
 
 export function AdForm({ id }: { id?: string }) {
@@ -86,7 +85,6 @@ export function AdForm({ id }: { id?: string }) {
 
   const defaultValues = useMemo<AdFormValues>(
     () => ({
-      // These will be auto-updated to first server option (if any) below for create flow
       type: "banner",
       position: "home",
       os_type: "android",
@@ -110,11 +108,6 @@ export function AdForm({ id }: { id?: string }) {
     reValidateMode: "onBlur",
   });
 
-  /**
-   * Edit flow: when ad loads, seed the form with the server entity.
-   * We intentionally DO NOT force-match to current dropdown lists; the
-   * existing value may be legacy but should still be visible/preserved.
-   */
   useEffect(() => {
     if (isEdit && ad && !isAdLoading) {
       reset({
@@ -192,27 +185,20 @@ export function AdForm({ id }: { id?: string }) {
     isAdFetching ||
     loadingDropdowns;
 
-  const EmptyNotice = ({
-    title,
-    what,
-  }: {
-    title: string;
-    what: "adTypes" | "adPositions";
-  }) => (
+  const EmptyNotice = () => (
     <div
-    role="alert"
-    className="
+      role="alert"
+      className="
       rounded-md border border-dashed p-3 text-sm
       border-amber-300 bg-amber-50 text-amber-900
       dark:border-amber-600 dark:bg-amber-900/30 dark:text-amber-100
     "
-  >
-    <div className="font-medium">No Type options found</div>
-    <div className="mt-1">
-      No options configured. Please add values in the admin dropdowns.
+    >
+      <div className="font-medium">No Type options found</div>
+      <div className="mt-1">
+        No options configured. Please add values in the admin dropdowns.
+      </div>
     </div>
-  </div>
-  
   );
 
   return (
@@ -339,15 +325,8 @@ export function AdForm({ id }: { id?: string }) {
             </div>
 
             {/* Admin-facing notices when no options are configured */}
-            {!loadingDropdowns && !hasAdTypeOptions && (
-              <EmptyNotice title="No Type options found" what="adTypes" />
-            )}
-            {!loadingDropdowns && !hasAdPositionOptions && (
-              <EmptyNotice
-                title="No Position options found"
-                what="adPositions"
-              />
-            )}
+            {!loadingDropdowns && !hasAdTypeOptions && <EmptyNotice />}
+            {!loadingDropdowns && !hasAdPositionOptions && <EmptyNotice />}
           </CardContent>
         </Card>
 

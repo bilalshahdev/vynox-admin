@@ -43,14 +43,14 @@ export function ServersPage() {
     return {
       page,
       limit: 10,
-      os_type: osFilter === "all" ? undefined : (osFilter as "android" | "ios" | "both"),
+      os_type: osFilter === "all" ? undefined : (osFilter as "android" | "ios"),
       mode: modeFilter === "all" ? undefined : (modeFilter as ServerMode),
       search: searchTerm || undefined,
     };
   }, [page, osFilter, modeFilter, searchTerm]);
 
-  const { data, isLoading, error } = useGetServers(query);
-  const { mutateAsync: deleteServer, isPending } = useDeleteServer();
+  const { data, isLoading } = useGetServers(query);
+  const { mutateAsync: deleteServer } = useDeleteServer();
 
   const {
     pagination: { total = 0, limit = 10 } = { total: 0, limit: 10 },
@@ -142,7 +142,9 @@ export function ServersPage() {
   };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-full">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-full">Loading...</div>
+    );
   }
 
   return (
@@ -170,7 +172,6 @@ export function ServersPage() {
               <SelectItem value="all">All OS</SelectItem>
               <SelectItem value="android">Android</SelectItem>
               <SelectItem value="ios">iOS</SelectItem>
-              <SelectItem value="both">Both</SelectItem>
             </SelectContent>
           </Select>
 

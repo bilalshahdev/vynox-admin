@@ -1,0 +1,291 @@
+"use client";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { ServerFormValues } from "@/lib/validation";
+import { Control, Controller, useController, useWatch } from "react-hook-form";
+import Selectable from "../fields/Selectable";
+import TextInput from "../fields/TextInput";
+
+import SearchSelect, { SearchSelectOption } from "@/components/SearchSelect";
+import { useSearchCities } from "@/hooks/useCity";
+import { useSearchCountries } from "@/hooks/useCountry";
+import type { City, Country } from "@/types/api.types";
+import { useMemo, useState } from "react";
+
+export default function GeneralSection({
+  control,
+}: {
+  control: Control<ServerFormValues>;
+}) {
+  const values = useWatch({ control });
+  const {
+    country,
+    country_code,
+    city,
+    os_type,
+    mode,
+    categories = [],
+  } = values.general || {};
+
+  const { field: countryCodeField } = useController({
+    control,
+    name: "general.country_code",
+  });
+  const { field: countryNameField } = useController({
+    control,
+    name: "general.country",
+  });
+  const { field: countryFlagField } = useController({
+    control,
+    name: "general.flag",
+  });
+  const { field: cityField } = useController({ control, name: "general.city" });
+  const { field: latField } = useController({
+    control,
+    name: "general.latitude",
+  });
+  const { field: lngField } = useController({
+    control,
+    name: "general.longitude",
+  });
+
+  // search states
+  const [countryQuery, setCountryQuery] = useState("");
+  const [cityQuery, setCityQuery] = useState("");
+
+  // fetch countries + cities
+  const { data: countryRes } = useSearchCountries(countryQuery, 20);
+  const countries: Country[] = countryRes?.data ?? [];
+
+  const { data: cityRes } = useSearchCities(cityQuery, 20, !!country_code);
+  const allCities: City[] = useMemo(() => cityRes?.data ?? [], [cityRes?.data]);
+
+  const cities = useMemo(
+    () =>
+      country_code
+        ? allCities.filter(
+            (c) =>
+              (typeof c.country === "string" ? c.country : c.country?._id) ===
+              country_code
+          )
+        : [],
+    [allCities, country_code]
+  );
+
+  // map to SearchSelectOptions
+  const countryOptions: SearchSelectOption[] = countries.map((c) => ({
+    value: c._id,
+    label: `${c.name} (${c.country_code})`,
+  }));
+
+  const cityOptions: SearchSelectOption[] = cities.map((ct) => ({
+    value: ct.name,
+    label: ct.state ? `${ct.name} (${ct.state})` : ct.name,
+  }));
+
+  // set flag also
+  const handleCountrySelect = (slug: string | null) => {
+    const c = countries.find((x) => x._id === slug);
+    if (c) {
+      countryCodeField.onChange(c._id);
+      countryNameField.onChange(c.name);
+      countryFlagField.onChange(c.flag);
+      cityField.onChange("");
+      latField.onChange(0);
+      lngField.onChange(0);
+    }
+  };
+
+  const handleCitySelect = (name: string | null) => {
+    const ct = allCities.find((x) => x.name === name);
+    if (ct) {
+      cityField.onChange(ct.name);
+      latField.onChange(Number(ct.latitude) || 0);
+      lngField.onChange(Number(ct.longitude) || 0);
+    }
+  };
+
+  const toggleCategory = (
+    cat: "gaming" | "streaming",
+    checked: boolean,
+    current: string[]
+  ) => {
+    const set = new Set(current);
+    checked ? set.add(cat) : set.delete(cat);
+    return Array.from(set);
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Basic Information</CardTitle>
+        <CardDescription>Configure server basic settings</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Name + IP */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <TextInput
+            control={control}
+            name="general.name"
+            label="Server Name"
+            placeholder="e.g., US-East-1"
+          />
+          <TextInput
+            control={control}
+            name="general.ip"
+            label="IP Address"
+            placeholder="203.0.113.45"
+          />
+        </div>
+
+        {/* Country + City Selects */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <SearchSelect
+            control={control}
+            name="general.country_code"
+            label="Country"
+            options={countryOptions}
+            placeholder="Search country..."
+            onSearchInput={setCountryQuery}
+            debounceMs={300}
+            onValueSelect={handleCountrySelect}
+            selectedLabel={country}
+          />
+
+          <SearchSelect
+            control={control}
+            name="general.city"
+            label="City"
+            options={cityOptions}
+            placeholder={
+              country_code ? "Search city..." : "Select country first"
+            }
+            onSearchInput={setCityQuery}
+            debounceMs={300}
+            onValueSelect={handleCitySelect}
+            selectedLabel={city}
+            disabled={!country_code}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <TextInput
+            control={control}
+            name="general.latitude"
+            label="Latitude"
+            type="number"
+            placeholder="50.1109"
+            disabled={!city}
+            readOnly
+          />
+          <TextInput
+            control={control}
+            name="general.longitude"
+            label="Longitude"
+            type="number"
+            placeholder="8.6821"
+            disabled={!city}
+            readOnly
+          />
+        </div>
+
+        {/* Categories */}
+        <div className="space-y-3">
+          <Label>Categories</Label>
+          <div className="flex gap-6">
+            <Controller
+              control={control}
+              name="general.categories"
+              render={({ field }) => (
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="gaming"
+                    checked={categories.includes("gaming")}
+                    onCheckedChange={(c) =>
+                      field.onChange(
+                        toggleCategory("gaming", Boolean(c), field.value || [])
+                      )
+                    }
+                  />
+                  <Label htmlFor="gaming">Gaming</Label>
+                </div>
+              )}
+            />
+            <Controller
+              control={control}
+              name="general.categories"
+              render={({ field }) => (
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="streaming"
+                    checked={categories.includes("streaming")}
+                    onCheckedChange={(c) =>
+                      field.onChange(
+                        toggleCategory(
+                          "streaming",
+                          Boolean(c),
+                          field.value || []
+                        )
+                      )
+                    }
+                  />
+                  <Label htmlFor="streaming">Streaming</Label>
+                </div>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* OS, Mode, Pro Switch */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Selectable
+            control={control}
+            name="general.os_type"
+            label="OS Type"
+            options={[
+              { value: "android", label: "Android" },
+              { value: "ios", label: "iOS" },
+            ]}
+            placeholder="Select OS type"
+            selectedValue={os_type}
+          />
+          <Selectable
+            control={control}
+            name="general.mode"
+            label="Mode"
+            options={[
+              { value: "test", label: "Test" },
+              { value: "live", label: "Live" },
+            ]}
+            placeholder="Select mode"
+            selectedValue={mode}
+          />
+          <div className="flex items-center space-x-2 pt-6">
+            <Controller
+              control={control}
+              name="general.is_pro"
+              render={({ field }) => (
+                <>
+                  <Switch
+                    id="is_pro"
+                    checked={field.value}
+                    onCheckedChange={(c) => field.onChange(Boolean(c))}
+                  />
+                  <Label htmlFor="is_pro">Pro Server</Label>
+                </>
+              )}
+            />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

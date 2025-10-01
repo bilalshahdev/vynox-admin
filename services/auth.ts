@@ -1,7 +1,7 @@
 // services/auth.ts
 
 import { api } from "@/lib/api";
-import { ApiResponse } from "@/lib/types";
+import { ApiResponse } from "@/types/api.types";
 
 interface LoginData {
   email: string;

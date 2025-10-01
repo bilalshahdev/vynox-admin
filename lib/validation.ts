@@ -1,31 +1,42 @@
 import { z } from "zod";
 
+// lib/validation.ts
 export const serverSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Server name is required")
-    .max(50, "Server name too long"),
-  ip: z.string().ip("Invalid IP address"),
-  country: z.string().min(1, "Country is required"),
-  country_code: z.string().min(2, "Country code is required").max(2),
-  city: z.string().min(1, "City is required"),
-  latitude: z.number().min(-90).max(90),
-  longitude: z.number().min(-180).max(180),
-  os_type: z.enum(["android", "ios", "both"]),
-  is_pro: z.boolean(),
-  mode: z.enum(["test", "live"]),
-  categories: z.array(z.string()),
-  openvpn_username: z.string().optional(),
-  openvpn_password: z.string().optional(),
-  openvpn_config: z.string().optional(),
-  wireguard_address: z.string().optional(),
-  wireguard_config: z.string().optional(),
+  general: z.object({
+    name: z.string(),
+    ip: z.string(),
+    country: z.string(),
+    country_code: z.string(),
+    flag: z.string().optional(),
+    city: z.string(),
+    latitude: z.number(),
+    longitude: z.number(),
+    categories: z.array(z.string()),
+    os_type: z.string(),
+    is_pro: z.boolean(),
+    mode: z.string(),
+  }),
+  openvpn_config: z
+    .object({
+      username: z.string().optional(),
+      password: z.string().optional(),
+      config: z.string().optional(),
+    })
+    .optional(),
+  wireguard_config: z
+    .object({
+      address: z.string().optional(),
+      config: z.string().optional(),
+    })
+    .optional(),
 });
+
+export type ServerFormValues = z.infer<typeof serverSchema>;
 
 export const adSchema = z.object({
   type: z.string().min(1, "Type is required"),
   position: z.string().min(1, "Position is required"),
-  os_type: z.enum(["android", "ios", "both"]),
+  os_type: z.enum(["android", "ios"]),
   status: z.boolean(),
   ad_id: z.string().min(1, "Ad unit ID is required"),
 });
@@ -46,3 +57,53 @@ export const dropdownSchema = z.object({
   is_active: z.boolean(),
   sort_order: z.number().min(0),
 });
+
+export const faqSchema = z.object({
+  question: z.string().min(5, "Question must be at least 5 characters long"),
+  answer: z.string().min(10, "Answer must be at least 10 characters long"),
+});
+
+// ----------------- COUNTRY -----------------
+
+export const countrySchema = z
+  .object({
+    name: z.string().min(2, "Country name is required"),
+
+    slug: z
+      .string()
+      .min(2, "Slug is required")
+      .regex(/^[a-z0-9-]+$/, "Slug must be lowercase and URL-friendly"),
+
+    country_code: z
+      .string()
+      .min(2, "Country code is required")
+      .max(5, "Country code too long")
+      .regex(/^[A-Z]{2,5}$/, "Country code must be uppercase letters"),
+
+    flag: z
+      .string()
+      .regex(/^[a-z]{2,5}\.png$/, "Flag must be in format 'xx.png'")
+      .optional(),
+  })
+  .refine(
+    (data) =>
+      !data.flag || data.flag === `${data.country_code.toLowerCase()}.png`,
+    {
+      message: "Flag must be {country_code}.png",
+      path: ["flag"],
+    }
+  );
+
+export type CountryFormValues = z.infer<typeof countrySchema>;
+
+// ----------------- CITY -----------------
+export const citySchema = z.object({
+  name: z.string().min(1),
+  slug: z.string().min(1),
+  state: z.string().min(1),
+  country: z.string().length(2, "Must be ISO2 code"),
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+});
+
+export type CityFormValues = z.infer<typeof citySchema>;

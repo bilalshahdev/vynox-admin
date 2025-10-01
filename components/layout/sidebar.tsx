@@ -3,6 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import {
   Activity,
   BarChart3,
@@ -13,10 +17,10 @@ import {
   Settings,
   Shield,
   Zap,
+  Globe,
+  Building2,
+  HelpCircle,
 } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 
 const navigation = [
   {
@@ -48,6 +52,21 @@ const navigation = [
     name: "Pages",
     href: "/pages",
     icon: FileText,
+  },
+  {
+    name: "Faqs",
+    href: "/faqs",
+    icon: HelpCircle,
+  },
+  {
+    name: "Countries",
+    href: "/countries",
+    icon: Globe,
+  },
+  {
+    name: "Cities",
+    href: "/cities",
+    icon: Building2,
   },
   {
     name: "Dropdowns",

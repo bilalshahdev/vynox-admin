@@ -1,4 +1,5 @@
 "use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -8,6 +9,13 @@ import PasswordInput from "./fields/PasswordInput";
 import TextInput from "./fields/TextInput";
 import { useLogin } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 interface LoginFormProps {
   email: string;
@@ -15,8 +23,10 @@ interface LoginFormProps {
 }
 
 const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  email: z.string().email({ message: "Enter a valid email address" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
 });
 
 const LoginForm = () => {
@@ -32,33 +42,41 @@ const LoginForm = () => {
 
   const onSubmit = (data: LoginFormProps) => {
     mutate(data, {
-      onSuccess: () => router.push("/"), // redirect here
+      onSuccess: () => router.push("/"),
     });
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
-      <div className="grid gap-2">
-        <TextInput
-          control={control}
-          placeholder="Password exposed"
-          name="email"
-          type="email"
-        />
-        <Button
-          type="submit"
-          className="w-full font-semibold text-white"
-          disabled={isPending}
-        >
-          {isPending ? <Loader /> : "f1shY#7xZ?"}
-        </Button>
-        <PasswordInput
-          control={control}
-          placeholder="Bad email"
-          name="password"
-        />
-      </div>
-    </form>
+    <Card className="w-full max-w-md mx-auto shadow-lg rounded-2xl">
+      <CardHeader className="space-y-1 text-center">
+        <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
+        <CardDescription>
+          Sign in with your email and password
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <TextInput
+            control={control}
+            placeholder="Enter your email"
+            name="email"
+            type="email"
+          />
+          <PasswordInput
+            control={control}
+            placeholder="Enter your password"
+            name="password"
+          />
+          <Button
+            type="submit"
+            className="w-full font-semibold"
+            disabled={isPending}
+          >
+            {isPending ? <Loader /> : "Sign In"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 

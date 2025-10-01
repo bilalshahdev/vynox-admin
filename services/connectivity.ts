@@ -7,7 +7,21 @@ import type {
   GetConnectivityByIdResponse,
   ApiSuccessItem,
   ApiError,
+  ApiResponse,
+  ConnectivityServer,
 } from "@/types/api.types";
+
+type ConnectivityServerResponse = ApiResponse<ConnectivityServer[]>;
+
+export const getServersWithConnectionStats = async (
+  page = 1,
+  limit = 50
+): Promise<ConnectivityServerResponse> => {
+  const res = await api.get("/connectivity/servers", {
+    params: { page, limit },
+  });
+  return res.data;
+};
 
 export const getConnectivity = async (
   params?: ListConnectivityQuery

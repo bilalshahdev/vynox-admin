@@ -1,7 +1,7 @@
 // src/app/servers/[id]/edit/page.tsx
 
 import Container from "@/components/Container";
-import { ServerForm } from "@/components/forms/ServerForm";
+import ServerForm from "@/components/forms/ServerForm";
 import React from "react";
 
 const EditServerPage = async ({

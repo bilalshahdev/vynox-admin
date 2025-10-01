@@ -1,7 +1,7 @@
 // services/servers.ts
 import { api } from "@/lib/api";
+import { ServerFormValues } from "@/lib/validation";
 import type {
-  CreateServerRequest,
   ListServerResponse,
   ListServersQuery,
   MutateServerResponse,
@@ -25,7 +25,7 @@ export const getServer = async (id: string): Promise<ServerByIdResponse> => {
 };
 
 export const createServer = async (
-  data: CreateServerRequest
+  data: ServerFormValues
 ): Promise<MutateServerResponse> => {
   const response = await api.post("/servers", data);
   return response.data;

@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
-import { z } from "zod";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { startTransition } from "react";
+import { startTransition, useEffect, useMemo } from "react";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 
 import {
   useAddDropdown,
@@ -72,7 +71,6 @@ export default function DropdownForm({ id }: { id?: string }) {
   const { control, handleSubmit, formState, reset } = form;
   const { fields, append, remove } = useFieldArray({ control, name: "values" });
 
-  // hydrate on edit
   useEffect(() => {
     if (isEdit && doc) {
       reset({
@@ -86,7 +84,6 @@ export default function DropdownForm({ id }: { id?: string }) {
     formState.isSubmitting || creating || updating || (isEdit && isLoading);
 
   const onSubmit = async (values: DropdownFormValues) => {
-    // normalize
     const payload = {
       name: values.name.trim().toLowerCase(),
       values: values.values.map((v) => ({
@@ -107,7 +104,6 @@ export default function DropdownForm({ id }: { id?: string }) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <Card>
         <CardContent className="space-y-6 pt-6">
-          {/* key/name */}
           <div className="space-y-2">
             <Label htmlFor="name">Key</Label>
             <Controller
@@ -131,7 +127,6 @@ export default function DropdownForm({ id }: { id?: string }) {
             />
           </div>
 
-          {/* values */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label>Values</Label>

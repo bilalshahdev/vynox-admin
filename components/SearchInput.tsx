@@ -5,14 +5,14 @@ import { useEffect, useState } from "react";
 import debounce from "lodash/debounce";
 import { cn } from "@/lib/utils";
 
-// npm package for debounce
-// npm i lodash
-
 type Props = {
   placeholder?: string;
   onChange: (value: string) => void;
   debounceDelay?: number;
   className?: string;
+  value?: string;
+  onFocus?: React.FocusEventHandler<HTMLInputElement>;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
 };
 
 export const SearchInput = ({
@@ -20,25 +20,31 @@ export const SearchInput = ({
   onChange,
   debounceDelay = 500,
   className,
+  value,
+  onFocus,
+  onBlur,
 }: Props) => {
-  const [value, setValue] = useState("");
+  const [internal, setInternal] = useState(value ?? "");
 
   useEffect(() => {
-    const handler = debounce((val: string) => {
-      onChange(val);
-    }, debounceDelay);
+    if (value !== undefined) setInternal(value);
+  }, [value]);
 
-    handler(value);
-
-    return () => {
-      handler.cancel();
-    };
-  }, [value, onChange, debounceDelay]);
+  useEffect(() => {
+    const handler = debounce((val: string) => onChange(val), debounceDelay);
+    handler(internal);
+    return () => handler.cancel();
+  }, [internal, onChange, debounceDelay]);
 
   return (
     <Input
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
+      value={internal}
+      onChange={(e) => {
+        const v = e.target.value;
+        setInternal(v);
+      }}
+      onFocus={onFocus}
+      onBlur={onBlur}
       placeholder={placeholder}
       className={cn("w-full max-w-sm", className)}
     />

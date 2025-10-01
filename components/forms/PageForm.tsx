@@ -82,7 +82,6 @@ export default function PageForm({ id }: { id?: string }) {
   const isEdit = Boolean(id);
 
   const { data: fetched, isLoading: isLoadingPage } = useGetPage(id!, isEdit);
-  // normalize data shape from hook
   const page: Page = useMemo(() => {
     return fetched?.data as Page;
   }, [fetched]);
@@ -100,7 +99,6 @@ export default function PageForm({ id }: { id?: string }) {
     mode: "onChange",
   });
 
-  // when editing, hydrate defaults after fetch
   useEffect(() => {
     if (isEdit && page) {
       form.reset({
@@ -115,7 +113,6 @@ export default function PageForm({ id }: { id?: string }) {
     control,
     handleSubmit,
     formState: { errors, isSubmitting, isValid },
-    watch,
   } = form;
 
   const onSubmit = async (values: PageFormValues) => {
@@ -141,7 +138,6 @@ export default function PageForm({ id }: { id?: string }) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <Card>
         <CardContent className="space-y-4">
-          {/* Page Type */}
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="type">Page Type</Label>
@@ -176,7 +172,6 @@ export default function PageForm({ id }: { id?: string }) {
               />
             </div>
 
-            {/* Title */}
             <div className="space-y-2">
               <Label htmlFor="title">Page Title</Label>
               <Controller
@@ -201,7 +196,6 @@ export default function PageForm({ id }: { id?: string }) {
             </div>
           </div>
 
-          {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description">Description (HTML or text)</Label>
             <Controller

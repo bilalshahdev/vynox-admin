@@ -19,7 +19,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   let error: string | null = null;
-  let isServerConnected = false;
 
   if (!baseUrl) {
     error = "❌ No Base URL provided.";
@@ -36,11 +35,9 @@ export default async function RootLayout({
         } else {
           error = `❌ Server responded with status ${res.status}`;
         }
-      } else {
-        isServerConnected = true;
       }
-    } catch (e) {
-      error = "❌ Could not connect to server";
+    } catch (e: any) {
+      error = e.message || "❌ Could not connect to server";
     }
   }
   return (

@@ -11,7 +11,7 @@ import TableActions from "../Actions";
 export function PagesPage() {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useGetPages({ page });
-  const { mutateAsync: deletePage, isPending } = useDeletePage();
+  const { mutateAsync: deletePage } = useDeletePage();
   const [pages, setPages] = useState<Page[]>([]);
 
   useEffect(() => {

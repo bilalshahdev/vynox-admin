@@ -5,10 +5,18 @@ import {
   getConnectivity,
   getConnectivityItem,
   updateConnectivity,
+  getServersWithConnectionStats,
 } from "@/services/connectivity";
 import type { ListConnectivityQuery } from "@/types/api.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+
+export const useGetServersWithConnectionStats = (page = 1, limit = 50) =>
+  useQuery({
+    queryKey: ["servers-with-connection-stats", page, limit],
+    queryFn: () => getServersWithConnectionStats(page, limit),
+    placeholderData: (prev) => prev,
+  });
 
 export const useGetConnectivity = (
   query: ListConnectivityQuery = { page: 1, limit: 10 }

@@ -15,11 +15,12 @@ export default function Selectable({
   onChange,
   errors,
   disabled,
+  selectedValue,
 }: any) {
   return (
     <div className="space-y-2">
       <Label>{label}</Label>
-      <Select value={value} onValueChange={onChange} disabled={disabled}>
+      <Select defaultValue={selectedValue} value={value} onValueChange={onChange} disabled={disabled}>
         <SelectTrigger className="w-full" disabled={disabled}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
@@ -31,7 +32,7 @@ export default function Selectable({
           ))}
         </SelectContent>
       </Select>
-      {errors.value && <p className="text-sm text-red-500">{errors.value}</p>}
+      {errors?.value && <p className="text-sm text-red-500">{errors.value}</p>}
     </div>
   );
 }
