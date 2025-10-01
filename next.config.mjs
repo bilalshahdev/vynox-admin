@@ -1,16 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
-    // ✅ Fail production build on ESLint errors
     ignoreDuringBuilds: false,
   },
   typescript: {
-    // ✅ Fail production build on TypeScript errors
     ignoreBuildErrors: false,
   },
+  // http://96.9.215.27:2025/api/v1/flags/de.png
   images: {
-    unoptimized: true, // keep if you don’t use next/image optimizer
-  },
+    unoptimized: true,
+  }
 };
 
 export default nextConfig;

@@ -6,16 +6,22 @@ import {
   getConnectivityItem,
   updateConnectivity,
   getServersWithConnectionStats,
+  ServersWithStatsQuery,
 } from "@/services/connectivity";
 import type { ListConnectivityQuery } from "@/types/api.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export const useGetServersWithConnectionStats = (page = 1, limit = 50) =>
+export const useGetServersWithConnectionStats = (
+  params?: ServersWithStatsQuery
+) =>
   useQuery({
-    queryKey: ["servers-with-connection-stats", page, limit],
-    queryFn: () => getServersWithConnectionStats(page, limit),
+    queryKey: ["servers-with-connection-stats", params],
+    queryFn: () => getServersWithConnectionStats(params),
     placeholderData: (prev) => prev,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true,
+    notifyOnChangeProps: ["data"],
   });
 
 export const useGetConnectivity = (

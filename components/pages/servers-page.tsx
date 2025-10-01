@@ -13,18 +13,11 @@ import { TableCell } from "@/components/ui/table";
 import { useDeleteServer, useGetServers } from "@/hooks/useServers";
 import { getCountryFlag } from "@/lib/countries";
 import { ServerFlat, ServerMode } from "@/types/api.types";
-import {
-  Crown,
-  Globe,
-  Power,
-  Search,
-  Smartphone,
-  Tablet,
-  TestTube,
-} from "lucide-react";
+import { Crown, Globe, Power, Search, TestTube } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import TableActions from "../Actions";
 import { DataTable } from "../DataTable";
+import OSType from "../OSType";
 import { SearchInput } from "../SearchInput"; // your debounced input
 
 export function ServersPage() {
@@ -90,14 +83,7 @@ export function ServersPage() {
         </TableCell>
 
         <TableCell>
-          <div className="flex items-center gap-1">
-            {server.os_type === "android" ? (
-              <Smartphone className="h-4 w-4 text-green-600" />
-            ) : (
-              <Tablet className="h-4 w-4 text-blue-600" />
-            )}
-            <span className="capitalize">{server.os_type}</span>
-          </div>
+          <OSType os_type={server.os_type} />
         </TableCell>
 
         <TableCell>

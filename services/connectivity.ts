@@ -11,18 +11,31 @@ import type {
   ConnectivityServer,
 } from "@/types/api.types";
 
+// Response type for the servers-with-stats endpoint
 type ConnectivityServerResponse = ApiResponse<ConnectivityServer[]>;
 
+// Query type for servers-with-stats (with new filters)
+export type ServersWithStatsQuery = {
+  page?: number;
+  limit?: number;
+  os_type?: "android" | "ios";
+  search?: string;
+};
+
+/**
+ * Get servers with connection statistics
+ * Supports pagination + filtering (os_type, search)
+ */
 export const getServersWithConnectionStats = async (
-  page = 1,
-  limit = 50
+  params?: ServersWithStatsQuery
 ): Promise<ConnectivityServerResponse> => {
-  const res = await api.get("/connectivity/servers", {
-    params: { page, limit },
-  });
+  const res = await api.get("/connectivity/servers", { params });
   return res.data;
 };
 
+/**
+ * List connectivity records (history / sessions)
+ */
 export const getConnectivity = async (
   params?: ListConnectivityQuery
 ): Promise<ListConnectivityResponse> => {
@@ -30,6 +43,9 @@ export const getConnectivity = async (
   return res.data;
 };
 
+/**
+ * Get single connectivity item by ID
+ */
 export const getConnectivityItem = async (
   id: string
 ): Promise<GetConnectivityByIdResponse> => {
@@ -37,6 +53,9 @@ export const getConnectivityItem = async (
   return res.data;
 };
 
+/**
+ * Create new connectivity record (connect)
+ */
 export const createConnectivity = async (
   data: Omit<Connectivity, "_id" | "created_at" | "updated_at">
 ): Promise<ApiSuccessItem<Connectivity> | ApiError> => {
@@ -44,6 +63,9 @@ export const createConnectivity = async (
   return res.data;
 };
 
+/**
+ * Update connectivity record (generic)
+ */
 export const updateConnectivity = async (
   id: string,
   data: Partial<Omit<Connectivity, "_id" | "created_at" | "updated_at">>
@@ -52,6 +74,9 @@ export const updateConnectivity = async (
   return res.data;
 };
 
+/**
+ * Delete connectivity record by ID
+ */
 export const deleteConnectivity = async (id: string) => {
   const res = await api.delete(`/connectivity/${id}`);
   return res.data;
