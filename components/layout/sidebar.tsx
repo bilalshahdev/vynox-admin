@@ -1,13 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { ChevronLeft, Power, Shield } from "lucide-react";
+import { Power } from "lucide-react";
 
 import {
   Sidebar as SidebarComponent,
@@ -28,7 +26,7 @@ interface SidebarProps {
   className?: string;
 }
 
-export function Sidebar({ className }: SidebarProps) {
+export default function Sidebar({ className }: SidebarProps) {
   const router = useRouter();
   const { openMobile, setOpenMobile, isMobile } = useSidebar();
   const pathname = usePathname();

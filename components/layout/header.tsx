@@ -1,18 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Sun, Moon } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
-interface HeaderProps {
-  title?: string;
-  subtitle?: string;
-}
 
-export function Header({ title = "Dashboard", subtitle }: HeaderProps) {
-  const { theme, setTheme } = useTheme();
+export default function Header() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
