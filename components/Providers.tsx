@@ -2,10 +2,12 @@
 import { Toaster } from "sonner";
 import ReactQueryProvider from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
+import TopLoader from "./TopLoader";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
+      <TopLoader />
       <ReactQueryProvider>
         <Toaster />
         <ThemeProvider

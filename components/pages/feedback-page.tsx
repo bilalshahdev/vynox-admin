@@ -1,21 +1,15 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { TableCell } from "@/components/ui/table";
+import { osTypes } from "@/config/options";
 import { useGetFeedback } from "@/hooks/useFeedbacks";
 import { Feedback } from "@/types/api.types";
+import formatDateTimeNoYear from "@/utils/formatDateTimeNoYear";
 import { Smartphone, Star, Tablet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "../DataTable";
-import Loading from "../Loading";
-import formatDateTimeNoYear from "@/utils/formatDateTimeNoYear";
+import Selectable from "../forms/fields/Selectable";
 
 export default function FeedbackPage() {
   const [page, setPage] = useState(1);
@@ -49,14 +43,7 @@ export default function FeedbackPage() {
     return "bg-red-100 text-red-800";
   };
 
-  const cols = [
-    "Rating",
-    "Server",
-    "os",
-    "Reason",
-    "Review",
-    "Date",
-  ];
+  const cols = ["Rating", "Server", "os", "Reason", "Review", "Date"];
 
   const rows = (feedback: Feedback) => {
     return (
@@ -68,7 +55,7 @@ export default function FeedbackPage() {
           </Badge>
         </TableCell>
         <TableCell className="font-medium">
-          {"..."+feedback.server_id.slice(-4)}
+          {"..." + feedback.server_id.slice(-4)}
         </TableCell>
         <TableCell>
           <div className="flex items-center gap-1">
@@ -94,70 +81,42 @@ export default function FeedbackPage() {
     );
   };
 
-  if (isLoadingFeedback) {
-    return <Loading />;
-  }
-
   return (
     <div className="space-y-6 h-full">
-      {/* Search and Filters */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2">
-          <Select value={osFilter} onValueChange={setOsFilter}>
-            <SelectTrigger className="w-36 h-11">
-              <SelectValue placeholder="OS Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All OS</SelectItem>
-              <SelectItem value="android">Android</SelectItem>
-              <SelectItem value="ios">iOS</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={ratingFilter} onValueChange={setRatingFilter}>
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Rating" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Ratings</SelectItem>
-              <SelectItem value="5">5 Stars</SelectItem>
-              <SelectItem value="4">4 Stars</SelectItem>
-              <SelectItem value="3">3 Stars</SelectItem>
-              <SelectItem value="2">2 Stars</SelectItem>
-              <SelectItem value="1">1 Star</SelectItem>
-            </SelectContent>
-          </Select>
+          <Selectable
+            options={osTypes}
+            value={osFilter}
+            onChange={setOsFilter}
+          />
 
-          <Select value={reasonFilter} onValueChange={setReasonFilter}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Reason" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Reasons</SelectItem>
-              <SelectItem value="Connection Issues">
-                Connection Issues
-              </SelectItem>
-              <SelectItem value="Speed Issues">Speed Issues</SelectItem>
-              <SelectItem value="App Issues">App Issues</SelectItem>
-              <SelectItem value="General Feedback">General Feedback</SelectItem>
-            </SelectContent>
-          </Select>
+          <Selectable
+            options={[
+              { label: "All Reasons", value: "all" },
+              { label: "Connection Issues", value: "Connection Issues" },
+              { label: "Speed Issues", value: "Speed Issues" },
+              { label: "App Issues", value: "App Issues" },
+              { label: "General Feedback", value: "General Feedback" },
+            ]}
+            value={reasonFilter}
+            onChange={setReasonFilter}
+          />
         </div>
       </div>
 
-      {/* Feedback Table */}
-      <div className="mt-6 rounded-md border">
-        <DataTable
-          data={servers}
-          cols={cols}
-          row={rows}
-          pagination={{
-            total,
-            limit,
-            page,
-            setPage,
-          }}
-        />
-      </div>
+      <DataTable
+        data={servers}
+        cols={cols}
+        row={rows}
+        pagination={{
+          total,
+          limit,
+          page,
+          setPage,
+        }}
+        isLoading={isLoadingFeedback}
+      />
     </div>
   );
 }

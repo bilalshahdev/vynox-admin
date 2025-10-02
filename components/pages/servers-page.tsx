@@ -2,14 +2,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { TableCell } from "@/components/ui/table";
+import { modeTypes, osTypes } from "@/config/options";
 import { useDeleteServer, useGetServers } from "@/hooks/useServers";
 import { getCountryFlag } from "@/lib/countries";
 import { ServerFlat, ServerMode } from "@/types/api.types";
@@ -18,7 +12,8 @@ import { useEffect, useMemo, useState } from "react";
 import TableActions from "../Actions";
 import { DataTable } from "../DataTable";
 import OSType from "../OSType";
-import { SearchInput } from "../SearchInput"; // your debounced input
+import { SearchInput } from "../SearchInput";
+import Selectable from "../forms/fields/Selectable";
 
 export function ServersPage() {
   const [page, setPage] = useState(1);
@@ -26,12 +21,9 @@ export function ServersPage() {
   const [modeFilter, setModeFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Reset page when filters/search change
   useEffect(() => {
     setPage(1);
   }, [osFilter, modeFilter, searchTerm]);
-
-  // Build query params for API
   const query = useMemo(() => {
     return {
       page,
@@ -127,19 +119,13 @@ export function ServersPage() {
     );
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">Loading...</div>
-    );
-  }
-
   return (
     <div className="space-y-8 h-full">
       <div className="flex rounded-lg flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-1 items-center gap-3">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            {/* Use your debounced SearchInput */}
+
             <SearchInput
               placeholder="Search servers, locations..."
               onChange={(val) => setSearchTerm(val)}
@@ -150,43 +136,31 @@ export function ServersPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Select value={osFilter} onValueChange={setOsFilter}>
-            <SelectTrigger className="w-36 h-11">
-              <SelectValue placeholder="OS Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All OS</SelectItem>
-              <SelectItem value="android">Android</SelectItem>
-              <SelectItem value="ios">iOS</SelectItem>
-            </SelectContent>
-          </Select>
+          <Selectable
+            options={osTypes}
+            value={osFilter}
+            onChange={setOsFilter}
+          />
 
-          <Select value={modeFilter} onValueChange={setModeFilter}>
-            <SelectTrigger className="w-36 h-11">
-              <SelectValue placeholder="Mode" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Modes</SelectItem>
-              <SelectItem value="live">Live</SelectItem>
-              <SelectItem value="test">Test</SelectItem>
-            </SelectContent>
-          </Select>
+          <Selectable
+            options={modeTypes}
+            value={modeFilter}
+            onChange={setModeFilter}
+          />
         </div>
       </div>
-
-      <div className="rounded-xl border border-border/50 overflow-hidden">
-        <DataTable
-          data={servers}
-          cols={cols}
-          row={rows}
-          pagination={{
-            total,
-            limit,
-            page,
-            setPage,
-          }}
-        />
-      </div>
+      <DataTable
+        data={servers}
+        isLoading={isLoading}
+        cols={cols}
+        row={rows}
+        pagination={{
+          total,
+          limit,
+          page,
+          setPage,
+        }}
+      />
     </div>
   );
 }

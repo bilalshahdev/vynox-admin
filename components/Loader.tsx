@@ -5,7 +5,7 @@ const Loader = ({ className }: { className?: string }) => {
     <div className="w-full h-full flex items-center justify-center text-center">
       <div
         className={cn(
-          "animate-spin rounded-full h-4 w-4 border-foreground border-t-2 border-b-2",
+          "animate-spin rounded-full h-4 w-4 border-background border-t-2 border-b-2",
           className
         )}
       />

@@ -1,21 +1,16 @@
 "use client";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { TableCell } from "@/components/ui/table";
+import { osTypes, statusTypes } from "@/config/options";
 import { useDeleteAd, useGetAds } from "@/hooks/useAds";
-import { Eye, EyeOff, Smartphone, Tablet } from "lucide-react";
+import { Ad } from "@/types/api.types";
+import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import TableActions from "../Actions";
 import { DataTable } from "../DataTable";
-import Loading from "../Loading";
+import Selectable from "../forms/fields/Selectable";
+import OSType from "../OSType";
 import { Badge } from "../ui/badge";
-import { Ad } from "@/types/api.types";
 
 export function AdsPage() {
   const [page, setPage] = useState(1);
@@ -26,7 +21,6 @@ export function AdsPage() {
     setPage(1);
   }, [osFilter, statusFilter]);
 
-  // Build query params for API
   const query = useMemo(() => {
     return {
       page,
@@ -64,13 +58,7 @@ export function AdsPage() {
         <TableCell>{ad.position}</TableCell>
         <TableCell>
           <div className="flex items-center gap-1">
-            {ad.os_type === "android" && (
-              <Smartphone className="h-4 w-4 text-green-600" />
-            )}
-            {ad.os_type === "ios" && (
-              <Tablet className="h-4 w-4 text-cyan-600" />
-            )}
-
+            <OSType os_type={ad.os_type} />
             <span className="capitalize">{ad.os_type}</span>
           </div>
         </TableCell>
@@ -104,39 +92,27 @@ export function AdsPage() {
     );
   };
 
-  if (isLoading) return <Loading />;
-
   return (
     <div className="space-y-8 h-full">
       {/* Ads Management */}
       <div className="flex rounded-lg flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-3">
-          <Select value={osFilter} onValueChange={setOsFilter}>
-            <SelectTrigger className="w-36 h-11">
-              <SelectValue placeholder="Platform" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Platforms</SelectItem>
-              <SelectItem value="android">Android</SelectItem>
-              <SelectItem value="ios">iOS</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-36 h-11">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="true">Active</SelectItem>
-              <SelectItem value="false">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
+          <Selectable
+            value={osFilter}
+            onChange={setOsFilter}
+            options={osTypes}
+          />
+          <Selectable
+            value={statusFilter}
+            onChange={setStatusFilter}
+            options={statusTypes}
+          />
         </div>
       </div>
 
-      <div className="rounded-xl border border-border/50 overflow-hidden">
+      <div>
         <DataTable
+          isLoading={isLoading}
           data={ads}
           cols={cols}
           row={rows}

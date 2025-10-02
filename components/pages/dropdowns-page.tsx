@@ -79,12 +79,6 @@ export function DropdownsPage() {
     );
   };
 
-  if (isLoading) {
-    return (
-      <div className="h-80 flex items-center justify-center">Loading…</div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
@@ -99,9 +93,10 @@ export function DropdownsPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-border/50 overflow-hidden">
+      <div>
         <DataTable
           data={dropdowns}
+          isLoading={isLoading}
           cols={cols}
           row={rows}
           pagination={{

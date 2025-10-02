@@ -49,7 +49,7 @@
 
 :root {
   --radius: 0.625rem;
-  --signature: var(--aqua);
+  --signature: oklch(66.6% 0.14 195);
   --aqua: oklch(0.74 0.1478 169.16);
   --blue: oklch(0.67 0.1788 247.92);
   --dark: oklch(0.22 0.0383 249.94);
@@ -156,8 +156,10 @@
 }
 
 @layer base {
+ 
   * {
     @apply border-border outline-ring/50;
+    font-size: 0.8rem;
   }
   body {
     @apply bg-background text-foreground;

@@ -34,20 +34,19 @@ function timeAgo(iso: string) {
   return `${s} second${s > 1 ? "s" : ""} ago`;
 }
 
-function TypeIcon({ type }: { type: Item["type"] }) {
-  if (type === "server") return <Server className="h-4 w-4 text-primary" />;
-  if (type === "ad") return <Megaphone className="h-4 w-4 text-secondary" />;
-  if (type === "feedback")
-    return <AlertTriangle className="h-4 w-4 text-orange-500" />;
-  return <ActivityIcon className="h-4 w-4 text-accent" />;
+function TypeIcon() {
+  return <ActivityIcon className="h-4 w-4" />;
 }
 
 export function RecentActivitySkeleton() {
   return (
     <div className="space-y-3">
-      <div className="h-12 w-full rounded-lg bg-muted animate-pulse" />
-      <div className="h-12 w-full rounded-lg bg-muted animate-pulse" />
-      <div className="h-12 w-full rounded-lg bg-muted animate-pulse" />
+      {[...Array(3)].map((_, i) => (
+        <div
+          key={i}
+          className="h-12 w-full rounded-lg bg-muted animate-pulse"
+        />
+      ))}
     </div>
   );
 }
@@ -78,8 +77,8 @@ export function RecentActivity({ items }: { items: Item[] }) {
                 key={a.ref_id}
                 className="flex shadow items-start gap-4 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-background shadow-sm">
-                  <TypeIcon type={a.type} />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-signature/40 shadow-sm">
+                  <TypeIcon />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium leading-relaxed text-foreground">

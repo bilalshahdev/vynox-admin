@@ -21,8 +21,6 @@ const Countries = () => {
 
   const cols = ["Name", "Slug", "Country Code", "Actions"];
 
-  if (isLoading) return <Loader />;
-
   const row = (country: Country) => (
     <>
       <TableCell className="max-w-32 truncate">
@@ -69,6 +67,7 @@ const Countries = () => {
         cols={cols}
         row={row}
         pagination={pagination}
+        isLoading={isLoading}
       />
     </div>
   );

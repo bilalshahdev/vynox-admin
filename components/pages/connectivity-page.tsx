@@ -1,21 +1,15 @@
 "use client";
 
 import { TableCell } from "@/components/ui/table";
+import { osTypes } from "@/config/options";
 import { useGetServersWithConnectionStats } from "@/hooks/useConnectivity";
 import { ConnectivityServer } from "@/types/api.types";
+import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "../DataTable";
-import Loading from "../Loading";
 import OSType from "../OSType";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Search } from "lucide-react";
 import { SearchInput } from "../SearchInput";
+import Selectable from "../forms/fields/Selectable";
 
 export function ConnectivityPage() {
   const [page, setPage] = useState(1);
@@ -69,8 +63,6 @@ export function ConnectivityPage() {
     );
   };
 
-  if (isLoading) return <Loading />;
-
   const pagination = {
     total: data?.pagination?.total,
     limit: data?.pagination?.limit,
@@ -84,7 +76,6 @@ export function ConnectivityPage() {
         <div className="flex flex-1 items-center gap-3">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            {/* Use your debounced SearchInput */}
             <SearchInput
               placeholder="Search servers, locations..."
               onChange={(val) => setSearchTerm(val)}
@@ -95,21 +86,17 @@ export function ConnectivityPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Select value={osFilter} onValueChange={setOsFilter}>
-            <SelectTrigger className="w-36 h-11">
-              <SelectValue placeholder="OS Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All OS</SelectItem>
-              <SelectItem value="android">Android</SelectItem>
-              <SelectItem value="ios">iOS</SelectItem>
-            </SelectContent>
-          </Select>
+          <Selectable
+            value={osFilter}
+            onChange={setOsFilter}
+            options={osTypes}
+          />
         </div>
       </div>
-      <div className="rounded-xl border border-border/50 overflow-hidden">
+      <div>
         <DataTable
           data={servers}
+          isLoading={isLoading}
           cols={cols}
           row={rows}
           pagination={pagination}

@@ -4,159 +4,120 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import {
-  Activity,
-  BarChart3,
-  ChevronLeft,
-  FileText,
-  MessageSquare,
-  Server,
-  Settings,
-  Shield,
-  Zap,
-  Globe,
-  Building2,
-  HelpCircle,
-} from "lucide-react";
+import { ChevronLeft, Power, Shield } from "lucide-react";
 
-const navigation = [
-  {
-    name: "Dashboard",
-    href: "/",
-    icon: BarChart3,
-  },
-  {
-    name: "Servers",
-    href: "/servers",
-    icon: Server,
-  },
-  {
-    name: "Ads",
-    href: "/ads",
-    icon: Zap,
-  },
-  {
-    name: "Feedback",
-    href: "/feedback",
-    icon: MessageSquare,
-  },
-  {
-    name: "Connectivity",
-    href: "/connectivity",
-    icon: Activity,
-  },
-  {
-    name: "Pages",
-    href: "/pages",
-    icon: FileText,
-  },
-  {
-    name: "Faqs",
-    href: "/faqs",
-    icon: HelpCircle,
-  },
-  {
-    name: "Countries",
-    href: "/countries",
-    icon: Globe,
-  },
-  {
-    name: "Cities",
-    href: "/cities",
-    icon: Building2,
-  },
-  {
-    name: "Dropdowns",
-    href: "/dropdowns",
-    icon: Settings,
-  },
-];
+import {
+  Sidebar as SidebarComponent,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import navigation from "@/config/navigation";
+import ConfirmDialog from "../ConfirmDialog";
+import Brand from "./Brand";
 
 interface SidebarProps {
   className?: string;
-  onCollapseChange?: (collapsed: boolean) => void;
 }
 
-export function Sidebar({ className, onCollapseChange }: SidebarProps) {
-  const [collapsed, setCollapsed] = useState(false);
+export function Sidebar({ className }: SidebarProps) {
+  const router = useRouter();
+  const { openMobile, setOpenMobile, isMobile } = useSidebar();
   const pathname = usePathname();
+  const [currentPath, setCurrentPath] = useState(pathname);
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
 
-  useEffect(() => {
-    onCollapseChange?.(collapsed);
-  }, [collapsed, onCollapseChange]);
-
-  const handleToggleCollapse = () => {
-    setCollapsed(!collapsed);
+  const isMenuActive = (path: { href: string }) => {
+    return pathname === path.href;
   };
 
+  useEffect(() => {
+    if (pathname !== currentPath) {
+      setCurrentPath(pathname);
+      if (isMobile && openMobile && !isLogoutDialogOpen) {
+        setOpenMobile(false);
+      }
+    }
+  }, [
+    pathname,
+    currentPath,
+    isMobile,
+    openMobile,
+    setOpenMobile,
+    isLogoutDialogOpen,
+  ]);
+
+  const handleConfirm = () => {
+    localStorage.removeItem("token");
+    router.replace("/auth/login");
+  };
   return (
-    <div
+    <SidebarComponent
       className={cn(
         "flex flex-col bg-sidebar border-r border-sidebar-border shadow-sm  h-full",
-        collapsed ? "w-16" : "w-64",
         className
       )}
+      collapsible="icon"
+      variant="sidebar"
     >
-      <div className="flex h-16 items-center justify-between px-4 border-b border-sidebar-border">
-        {!collapsed && (
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
-              <Shield className="h-6 w-6 text-primary-foreground" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-bold text-sidebar-foreground tracking-tight">
-                VynoxVPN
-              </span>
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Admin Panel
-              </span>
-            </div>
-          </div>
-        )}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleToggleCollapse}
-          className="h-9 w-9 p-0 hover:bg-muted/50 transition-colors"
-        >
-          <ChevronLeft
-            className={cn(
-              "h-4 w-4 transition-transform duration-200",
-              collapsed && "rotate-180"
-            )}
-          />
-        </Button>
-      </div>
+      <SidebarHeader className="h-16 px-3 border-b flex items-center justify-center">
+        <SidebarMenuButton className="cursor-pointer h-full hover:bg-transparent">
+          <Brand />
+          <span className="text-xl font-bold text-signature tracking-tight">
+            VynoxVPN
+          </span>
+        </SidebarMenuButton>
+      </SidebarHeader>
 
-      <ScrollArea className="flex-1 px-3 py-6">
-        <nav className="space-y-1">
-          {navigation.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link key={item.name} href={item.href}>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start gap-3 h-11 px-3 font-medium transition-all duration-200",
-                    collapsed && "px-3 justify-center",
-                    isActive
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm hover:bg-sidebar-accent/90"
-                      : "text-sidebar-foreground hover:bg-muted/50 hover:text-sidebar-foreground"
-                  )}
-                >
-                  <item.icon className="h-5 w-5 flex-shrink-0" />
-                  {!collapsed && (
-                    <span className="text-sm font-medium">{item.name}</span>
-                  )}
-                </Button>
-              </Link>
-            );
-          })}
-        </nav>
-      </ScrollArea>
-    </div>
+      <SidebarContent className="flex flex-col justify-between py-4">
+        <SidebarGroup className="overflow-y-auto">
+          <SidebarMenu className="flex flex-col">
+            {navigation.map(
+              (item: { href: string; name: string; icon: any }) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton
+                    tooltip={item.name}
+                    isActive={isMenuActive(item)}
+                    asChild
+                    className={
+                      isMenuActive(item)
+                        ? "bg-gradient-to-b from-blue-500/20 to-aqua/20"
+                        : "hover:bg-gradient-to-b/50 from-blue-500/20 to-aqua/20"
+                    }
+                  >
+                    <Link href={item.href} className="flex items-center gap-2">
+                      <item.icon size={20} className="text-foreground/50" />
+
+                      <span>{item.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
+            )}
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarFooter>
+          <ConfirmDialog
+            title="Logout"
+            description="Are you sure you want to logout?"
+            onConfirm={() => handleConfirm()}
+            variant="destructive"
+            asChild
+          >
+            <SidebarMenuButton className="bg-red-500 hover:bg-red-600 hover:text-white text-white transition-colors">
+              <Power size={16} /> <span>Logout</span>
+            </SidebarMenuButton>
+          </ConfirmDialog>
+        </SidebarFooter>
+      </SidebarContent>
+    </SidebarComponent>
   );
 }

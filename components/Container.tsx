@@ -28,7 +28,7 @@ const Container = ({
   return (
     <Card className="flex flex-col h-full overflow-auto">
       <CardHeader>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between">
           {title && <PageTitle title={title} />}
           {subtitle && <PageSubtitle subtitle={subtitle} />}
           {addBtnTitle && (
@@ -41,10 +41,7 @@ const Container = ({
         </div>
       </CardHeader>
 
-      <CardContent
-        className={cn(`w-full mx-auto flex-1 ${m ? "mb-" : ""}`, className)}
-        {...rest}
-      >
+      <CardContent className={cn("w-full mx-auto flex-1", className)} {...rest}>
         {children}
       </CardContent>
     </Card>

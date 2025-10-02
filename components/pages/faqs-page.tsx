@@ -1,14 +1,13 @@
 "use client";
 
 import { useDeleteFaq, useGetFaqs } from "@/hooks/useFaqs";
-import Loader from "../Loader";
-import { useState } from "react";
-import { DataTable } from "../DataTable";
-import { TableCell } from "../ui/table";
-import Tooltip from "../Tooltip";
 import { Faq } from "@/types/api.types";
+import { useState } from "react";
 import TableActions from "../Actions";
+import { DataTable } from "../DataTable";
 import FaqForm from "../forms/FaqForm";
+import Tooltip from "../Tooltip";
+import { TableCell } from "../ui/table";
 
 const Faqs = () => {
   const [page, setPage] = useState(1);
@@ -18,8 +17,6 @@ const Faqs = () => {
   const P = data?.pagination;
   const { mutate: deleteFaq, isPending: deleteLoading } = useDeleteFaq();
   const cols = ["Question", "Answer", "Actions"];
-
-  if (isLoading) return <Loader />;
 
   const row = (faq: Faq) => {
     return (
@@ -66,9 +63,13 @@ const Faqs = () => {
     setPage,
   };
   return (
-    <div>
-      <DataTable data={faqs} cols={cols} row={row} pagination={pagination} />
-    </div>
+    <DataTable
+      data={faqs}
+      isLoading={isLoading}
+      cols={cols}
+      row={row}
+      pagination={pagination}
+    />
   );
 };
 

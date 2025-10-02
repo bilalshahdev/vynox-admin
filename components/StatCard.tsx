@@ -34,7 +34,7 @@ export function StatCard({
         className
       )}
     >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.08em]">
           {title}
         </CardTitle>

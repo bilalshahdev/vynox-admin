@@ -1,3 +1,4 @@
+// components/DataTable.tsx
 "use client";
 
 import {
@@ -9,6 +10,8 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import Pagination from "./Pagination";
+import NoData from "./NoData";
+import TableSkeleton from "./TableSkeleton";
 
 type DataTableProps<T> = {
   data: T[];
@@ -19,6 +22,10 @@ type DataTableProps<T> = {
   headClassName?: string;
   headerClassName?: string;
   rowClassName?: string;
+  isLoading?: boolean;
+  emptyTitle?: string;
+  emptyDescription?: string;
+  emptyAction?: React.ReactNode;
   pagination?: {
     total: number | undefined;
     page: number | undefined;
@@ -36,6 +43,10 @@ export function DataTable<T>({
   headClassName,
   headerClassName,
   rowClassName,
+  isLoading = false,
+  emptyTitle,
+  emptyDescription,
+  emptyAction,
   pagination = {
     total: 0,
     page: 1,
@@ -43,12 +54,19 @@ export function DataTable<T>({
     setPage: () => {},
   },
 }: DataTableProps<T>) {
+  const showEmpty = !isLoading && data.length === 0;
+
   return (
-    <div className="flex flex-col gap-4 justify-between md:gap-8 h-full">
-      {data.length === 0 ? (
-        <div className="h-80 flex items-center justify-center text-muted-foreground text-sm">
-          No Data
-        </div>
+    <div className="flex flex-col gap-4 md:gap-8 h-full">
+      {isLoading ? (
+        <TableSkeleton rows={6} />
+      ) : showEmpty ? (
+        <NoData
+          title={emptyTitle}
+          description={emptyDescription}
+          action={emptyAction}
+          className="h-96"
+        />
       ) : (
         <Table className={cn("h-full", tableClassName)}>
           <>
@@ -74,6 +92,7 @@ export function DataTable<T>({
           </>
         </Table>
       )}
+
       {pagination && (
         <Pagination
           pagination={{

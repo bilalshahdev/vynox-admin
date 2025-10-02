@@ -1,14 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
-
-const Loader = () => (
-  <div className="flex h-screen w-full items-center justify-center">
-    <p className="text-lg font-semibold">Loading...</p>
-  </div>
-);
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Loading from "./layout/Loading";
 
 interface DecodedToken {
   exp: number;
@@ -58,7 +53,7 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
     checkAuth();
   }, [pathname, router]);
 
-  if (loading) return <Loader />;
+  if (loading) return <Loading />;
 
   // Only render children if authorized or already on /auth/login
   if (!authorized && pathname !== "/auth/login") return null;

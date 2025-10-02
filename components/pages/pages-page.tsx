@@ -40,8 +40,6 @@ export function PagesPage() {
     );
   };
 
-  if (isLoading) return <Loading />;
-
   const pagination = {
     total: data?.pagination?.total,
     limit: data?.pagination?.limit,
@@ -51,12 +49,13 @@ export function PagesPage() {
 
   return (
     <div className="space-y-8 h-full">
-      <div className="rounded-xl border border-border/50 overflow-hidden">
+      <div className="rounded-xl overflow-hidden">
         <DataTable
           data={pages}
           cols={cols}
           row={rows}
           pagination={pagination}
+          isLoading={isLoading}
         />
       </div>
     </div>

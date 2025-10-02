@@ -10,17 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 import { useAddPage, useGetPage, useUpdatePage } from "@/hooks/usePages";
 import type { Page } from "@/lib/types";
+import Selectable from "./fields/Selectable";
 
 const pageTypes = [
   {
@@ -146,22 +140,12 @@ export default function PageForm({ id }: { id?: string }) {
                 name="type"
                 render={({ field }) => (
                   <>
-                    <Select
+                    <Selectable
+                      options={pageTypes}
                       value={field.value}
-                      onValueChange={(val) => field.onChange(val)}
+                      onChange={field.onChange}
                       disabled={pending}
-                    >
-                      <SelectTrigger id="type" className="w-full">
-                        <SelectValue placeholder="Select page type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {pageTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    />
                     {errors.type && (
                       <p className="text-sm text-destructive mt-1">
                         {errors.type.message}

@@ -49,9 +49,9 @@ const LoginForm = () => {
   return (
     <Card className="w-full max-w-md mx-auto shadow-lg rounded-2xl">
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
+        <CardTitle className="text-2xl font-bold">Login</CardTitle>
         <CardDescription>
-          Sign in with your email and password
+          Login with your email and password
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -72,7 +72,7 @@ const LoginForm = () => {
             className="w-full font-semibold"
             disabled={isPending}
           >
-            {isPending ? <Loader /> : "Sign In"}
+            {isPending ? <Loader /> : "Login"}
           </Button>
         </form>
       </CardContent>

@@ -1,14 +1,13 @@
 "use client";
 
 import { useDeleteCity, useGetCities } from "@/hooks/useCity";
-import Loader from "../Loader";
-import { useState } from "react";
-import { DataTable } from "../DataTable";
-import { TableCell } from "../ui/table";
-import Tooltip from "../Tooltip";
 import { City } from "@/types/api.types";
+import { useState } from "react";
 import TableActions from "../Actions";
+import { DataTable } from "../DataTable";
 import CityForm from "../forms/CityForm";
+import Tooltip from "../Tooltip";
+import { TableCell } from "../ui/table";
 
 const Cities = () => {
   const [page, setPage] = useState(1);
@@ -19,8 +18,6 @@ const Cities = () => {
   const { mutate: deleteCity, isPending: deleteLoading } = useDeleteCity();
 
   const cols = ["Name", "State", "Country", "Latitude", "Longitude", "Actions"];
-
-  if (isLoading) return <Loader />;
 
   const row = (city: City) => {
     const countryName =
@@ -71,7 +68,13 @@ const Cities = () => {
 
   return (
     <div>
-      <DataTable data={cities} cols={cols} row={row} pagination={pagination} />
+      <DataTable
+        isLoading={isLoading}
+        data={cities}
+        cols={cols}
+        row={row}
+        pagination={pagination}
+      />
     </div>
   );
 };
