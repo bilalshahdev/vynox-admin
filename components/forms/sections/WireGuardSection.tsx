@@ -28,11 +28,13 @@ const WireGuardSection = ({
           control={control}
           name="wireguard_config.address"
           label="Address"
+          placeholder="Enter address"
         />
         <TextInput
           control={control}
           name="wireguard_config.config"
           label="Config"
+          placeholder="Enter config"
           type="textarea"
         />
       </CardContent>

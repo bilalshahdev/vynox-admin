@@ -246,27 +246,38 @@ export default function GeneralSection({
 
         {/* OS, Mode, Pro Switch */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Selectable
+          <Controller
             control={control}
             name="general.os_type"
-            label="OS Type"
-            options={[
-              { value: "android", label: "Android" },
-              { value: "ios", label: "iOS" },
-            ]}
-            placeholder="Select OS type"
-            selectedValue={os_type}
+            render={({ field }) => (
+              <Selectable
+                label="OS Type"
+                placeholder="Select OS type"
+                options={[
+                  { value: "android", label: "Android" },
+                  { value: "ios", label: "iOS" },
+                ]}
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
           />
-          <Selectable
+
+          <Controller
             control={control}
             name="general.mode"
-            label="Mode"
-            options={[
-              { value: "test", label: "Test" },
-              { value: "live", label: "Live" },
-            ]}
-            placeholder="Select mode"
-            selectedValue={mode}
+            render={({ field }) => (
+              <Selectable
+                label="Mode"
+                placeholder="Select mode"
+                options={[
+                  { value: "test", label: "Test" },
+                  { value: "live", label: "Live" },
+                ]}
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
           />
           <div className="flex items-center space-x-2 pt-6">
             <Controller

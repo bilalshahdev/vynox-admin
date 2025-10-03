@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +33,8 @@ const PLATFORMS = [
 export function AdForm({ id }: { id?: string }) {
   const router = useRouter();
   const isEdit = Boolean(id);
+
+
 
   const {
     data: adResp,

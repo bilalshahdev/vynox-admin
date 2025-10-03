@@ -30,17 +30,20 @@ const OpenVPNSection = ({
             control={control}
             name="openvpn_config.username"
             label="Username"
+            placeholder="Enter username"
           />
           <PasswordInput
             control={control}
             name="openvpn_config.password"
             label="Password"
+            placeholder="Enter password"
           />
         </div>
         <TextInput
           control={control}
           name="openvpn_config.config"
           label="Config"
+          placeholder="Enter config"
           type="textarea"
         />
       </CardContent>
