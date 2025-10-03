@@ -20,7 +20,7 @@ export const searchFaqs = async ({
 
 export const getFaqs = async ({
   page = 1,
-  limit = 10,
+  limit = 20,
 }: {
   page: number;
   limit: number;

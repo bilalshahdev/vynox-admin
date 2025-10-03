@@ -11,7 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export const useGetFeedback = (
-  query: ListFeedbackQuery = { page: 1, limit: 10 }
+  query: ListFeedbackQuery = { page: 1, limit: 20 }
 ) =>
   useQuery({
     queryKey: [

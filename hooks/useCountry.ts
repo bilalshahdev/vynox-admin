@@ -17,7 +17,7 @@ export const useSearchCountries = (query: string, limit = 20, enabled = true) =>
     placeholderData: (prev) => prev,
   });
 
-export const useGetCountries = (page = 1, limit = 10) =>
+export const useGetCountries = (page = 1, limit = 20) =>
   useQuery({
     queryKey: ["countries", page, limit],
     queryFn: () => getCountries({ page, limit }),

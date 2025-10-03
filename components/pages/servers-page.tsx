@@ -3,11 +3,12 @@
 
 import { Badge } from "@/components/ui/badge";
 import { TableCell } from "@/components/ui/table";
+import { baseUrl } from "@/config/constants";
 import { modeTypes, osTypes } from "@/config/options";
 import { useDeleteServer, useGetServers } from "@/hooks/useServers";
-import { getCountryFlag } from "@/lib/countries";
 import { ServerFlat, ServerMode } from "@/types/api.types";
 import { Crown, Globe, Power, Search, TestTube } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import TableActions from "../Actions";
 import { DataTable } from "../DataTable";
@@ -27,7 +28,7 @@ export function ServersPage() {
   const query = useMemo(() => {
     return {
       page,
-      limit: 10,
+      limit: 20,
       os_type: osFilter === "all" ? undefined : (osFilter as "android" | "ios"),
       mode: modeFilter === "all" ? undefined : (modeFilter as ServerMode),
       search: searchTerm || undefined,
@@ -38,9 +39,9 @@ export function ServersPage() {
   const { mutateAsync: deleteServer } = useDeleteServer();
 
   const {
-    pagination: { total = 0, limit = 10 } = { total: 0, limit: 10 },
+    pagination: { total = 0, limit = 20 } = { total: 0, limit: 20 },
     data: servers = [],
-  } = data ?? { pagination: { total: 0, limit: 10 } };
+  } = data ?? { pagination: { total: 0, limit: 20 } };
 
   const handleDeleteServer = async (serverId: string) => {
     await deleteServer(serverId);
@@ -62,9 +63,12 @@ export function ServersPage() {
 
         <TableCell>
           <div className="flex items-center gap-2">
-            <span className="text-lg">
-              {getCountryFlag(server.country_code)}
-            </span>
+            <Image
+              src={baseUrl + "/api/v1/flags/" + server.flag}
+              alt={server.country}
+              width={20}
+              height={20}
+            />
             <div>
               <div className="font-medium">{server.city}</div>
               <div className="text-sm text-muted-foreground">

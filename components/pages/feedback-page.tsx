@@ -24,7 +24,7 @@ export default function FeedbackPage() {
   const query = useMemo(() => {
     return {
       page,
-      limit: 10,
+      limit: 20,
       os_type: osFilter === "all" ? undefined : (osFilter as "android" | "ios"),
       rating: ratingFilter === "all" ? undefined : Number(ratingFilter),
       reason: reasonFilter === "all" ? undefined : reasonFilter,
@@ -33,9 +33,9 @@ export default function FeedbackPage() {
   const { data: fetched, isLoading: isLoadingFeedback } = useGetFeedback(query);
 
   const {
-    pagination: { total = 0, limit = 10 } = { total: 0, limit: 10 },
+    pagination: { total = 0, limit = 20 } = { total: 0, limit: 20 },
     data: servers = [],
-  } = fetched ?? { pagination: { total: 0, limit: 10 } };
+  } = fetched ?? { pagination: { total: 0, limit: 20 } };
 
   const getRatingBadgeColor = (rating: number) => {
     if (rating >= 4) return "bg-green-100 text-green-800";

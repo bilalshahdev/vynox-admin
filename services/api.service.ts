@@ -25,7 +25,7 @@ class ApiService {
   }
 
   // Servers
-  async getServers(page = 1, limit = 10) {
+  async getServers(page = 1, limit = 20) {
     return this.request(`/servers?page=${page}&limit=${limit}`)
   }
 
@@ -50,7 +50,7 @@ class ApiService {
   }
 
   // Ads
-  async getAds(page = 1, limit = 10) {
+  async getAds(page = 1, limit = 20) {
     return this.request(`/ads?page=${page}&limit=${limit}`)
   }
 
@@ -75,17 +75,17 @@ class ApiService {
   }
 
   // Feedback
-  async getFeedback(page = 1, limit = 10) {
+  async getFeedback(page = 1, limit = 20) {
     return this.request(`/feedback?page=${page}&limit=${limit}`)
   }
 
   // Connectivity
-  async getConnectivity(page = 1, limit = 10) {
+  async getConnectivity(page = 1, limit = 20) {
     return this.request(`/connectivity?page=${page}&limit=${limit}`)
   }
 
   // Pages
-  async getPages(page = 1, limit = 10) {
+  async getPages(page = 1, limit = 20) {
     return this.request(`/pages?page=${page}&limit=${limit}`)
   }
 
@@ -110,7 +110,7 @@ class ApiService {
   }
 
   // Dropdowns
-  async getDropdowns(page = 1, limit = 10) {
+  async getDropdowns(page = 1, limit = 20) {
     return this.request(`/dropdowns?page=${page}&limit=${limit}`)
   }
 

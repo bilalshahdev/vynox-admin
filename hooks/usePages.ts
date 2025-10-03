@@ -11,7 +11,7 @@ import type { ListPagesQuery } from "@/types/api.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export const useGetPages = (query: ListPagesQuery = { page: 1, limit: 10 }) =>
+export const useGetPages = (query: ListPagesQuery = { page: 1, limit: 20 }) =>
   useQuery({
     queryKey: [
       "pages",

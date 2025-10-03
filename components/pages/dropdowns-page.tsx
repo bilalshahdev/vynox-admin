@@ -28,7 +28,7 @@ export function DropdownsPage() {
   const query = useMemo(
     () => ({
       page,
-      limit: 10,
+      limit: 20,
       name: searchName || undefined,
     }),
     [page, searchName]

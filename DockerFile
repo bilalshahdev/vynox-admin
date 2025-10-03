@@ -30,6 +30,6 @@
       && adduser -S nextjs -u 1001 -G nextjs
     USER nextjs
     
-    EXPOSE 3000
+    EXPOSE 3123
     CMD ["node", "server.js"]
     

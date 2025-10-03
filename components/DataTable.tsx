@@ -50,7 +50,7 @@ export function DataTable<T>({
   pagination = {
     total: 0,
     page: 1,
-    limit: 10,
+    limit: 20,
     setPage: () => {},
   },
 }: DataTableProps<T>) {
@@ -59,7 +59,7 @@ export function DataTable<T>({
   return (
     <div className="flex flex-col gap-4 md:gap-8 h-full">
       {isLoading ? (
-        <TableSkeleton rows={6} />
+        <TableSkeleton rows={10} />
       ) : showEmpty ? (
         <NoData
           title={emptyTitle}
@@ -68,7 +68,7 @@ export function DataTable<T>({
           className="h-96"
         />
       ) : (
-        <Table className={cn("h-full", tableClassName)}>
+        <Table className={cn("max-h-full", tableClassName)}>
           <>
             <TableHeader className={cn("", headerClassName)}>
               <TableRow className={cn("", rowClassName)}>
@@ -98,7 +98,7 @@ export function DataTable<T>({
           pagination={{
             total: pagination?.total || 0,
             page: pagination?.page || 1,
-            limit: pagination?.limit || 10,
+            limit: pagination?.limit || 20,
           }}
           changePage={(newPage) => pagination?.setPage(newPage)}
         />

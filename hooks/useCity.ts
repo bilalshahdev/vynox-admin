@@ -17,7 +17,7 @@ export const useSearchCities = (query: string, limit = 20, enabled = true) =>
     placeholderData: (prev) => prev,
   });
 
-export const useGetCities = (page = 1, limit = 10) =>
+export const useGetCities = (page = 1, limit = 20) =>
   useQuery({
     queryKey: ["cities", page, limit],
     queryFn: () => getCities({ page, limit }),

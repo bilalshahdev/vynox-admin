@@ -25,7 +25,7 @@ export const useGetServersWithConnectionStats = (
   });
 
 export const useGetConnectivity = (
-  query: ListConnectivityQuery = { page: 1, limit: 10 }
+  query: ListConnectivityQuery = { page: 1, limit: 20 }
 ) =>
   useQuery({
     queryKey: [

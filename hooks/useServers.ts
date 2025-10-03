@@ -22,7 +22,7 @@ import { toast } from "sonner";
 /** LIST */
 export const useGetServers = ({
   page = 1,
-  limit = 10,
+  limit = 20,
   os_type,
   mode,
   search,

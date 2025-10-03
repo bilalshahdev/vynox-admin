@@ -15,7 +15,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export const useGetDropdowns = (
-  query: ListDropdownsQuery = { page: 1, limit: 10 }
+  query: ListDropdownsQuery = { page: 1, limit: 20 }
 ) =>
   useQuery({
     queryKey: ["dropdowns", query.page, query.limit, query.name],

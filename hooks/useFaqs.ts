@@ -20,7 +20,7 @@ export const useSearchFaqs = (query: string, limit = 20, enabled = true) =>
   });
 
 // 📃 Get FAQs with pagination
-export const useGetFaqs = (page = 1, limit = 10) =>
+export const useGetFaqs = (page = 1, limit = 20) =>
   useQuery({
     queryKey: ["faqs", page, limit],
     queryFn: () => getFaqs({ page, limit }),

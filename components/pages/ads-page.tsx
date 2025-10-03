@@ -24,7 +24,7 @@ export function AdsPage() {
   const query = useMemo(() => {
     return {
       page,
-      limit: 10,
+      limit: 20,
       os_type: osFilter === "all" ? undefined : (osFilter as "android" | "ios"),
       status:
         statusFilter === "all"
@@ -39,9 +39,9 @@ export function AdsPage() {
   const { mutateAsync: deleteAd } = useDeleteAd();
 
   const {
-    pagination: { total = 0, limit = 10 } = { total: 0, limit: 10 },
+    pagination: { total = 0, limit = 20 } = { total: 0, limit: 20 },
     data: ads = [],
-  } = data ?? { pagination: { total: 0, limit: 10 } };
+  } = data ?? { pagination: { total: 0, limit: 20 } };
 
   const handleDeleteAd = async (adId: string) => {
     await deleteAd(adId);
@@ -109,7 +109,6 @@ export function AdsPage() {
           />
         </div>
       </div>
-
       <div>
         <DataTable
           isLoading={isLoading}

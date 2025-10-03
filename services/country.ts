@@ -18,7 +18,7 @@ export const searchCountries = async ({
 
 export const getCountries = async ({
   page = 1,
-  limit = 10,
+  limit = 20,
 }: {
   page: number;
   limit: number;

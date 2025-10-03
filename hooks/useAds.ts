@@ -11,7 +11,7 @@ import {
   import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
   import { toast } from "sonner";
   
-  export const useGetAds = (query: ListAdsQuery = { page: 1, limit: 10 }) =>
+  export const useGetAds = (query: ListAdsQuery = { page: 1, limit: 20 }) =>
     useQuery({
       queryKey: ["ads", query.page, query.limit, query.os_type, query.type, query.position, query.status],
       queryFn: () => getAds(query),

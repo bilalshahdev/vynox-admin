@@ -24,7 +24,7 @@ export function ConnectivityPage() {
   const query = useMemo(() => {
     return {
       page,
-      limit: 10,
+      limit: 20,
       os_type: osFilter === "all" ? undefined : (osFilter as "android" | "ios"),
       search: searchTerm || undefined,
     };
