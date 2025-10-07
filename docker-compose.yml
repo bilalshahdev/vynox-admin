@@ -1,11 +1,9 @@
-version: "3.9"
 services:
   vynox-admin:
+    image: ghcr.io/bilalshahdev/vynox-admin:latest
     container_name: vynox-admin
-    build: .
+    restart: unless-stopped
     ports:
       - "2026:2026"
-    restart: always
-    environment:
-      - NODE_ENV=production
-      - PORT=2026
+    env_file:
+      - .env

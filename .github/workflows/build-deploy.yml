@@ -49,6 +49,8 @@ jobs:
           tags: |
             ghcr.io/${{ secrets.GHCR_USERNAME }}/vynox-admin:latest
             ghcr.io/${{ secrets.GHCR_USERNAME }}/vynox-admin:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
 
   # ===========================================
   # 2️⃣ Deploy to Remote Server via SSH
@@ -66,19 +68,12 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            cd /opt/vynox-admin
             echo "📦 Pulling latest Docker image..."
-            docker pull ghcr.io/${{ secrets.GHCR_USERNAME }}/vynox-admin:latest
+            docker-compose pull
 
-            echo "🛑 Stopping existing container (if running)..."
-            docker stop vynox-admin || true
-            docker rm vynox-admin || true
+            echo "🚀 Starting/Updating container..."
+            docker-compose up -d
 
-            echo "🚀 Starting new container..."
-            docker run -d \
-              --name vynox-admin \
-              --env-file /opt/vynox-admin/.env \
-              -p 2026:2026 \
-              ghcr.io/${{ secrets.GHCR_USERNAME }}/vynox-admin:latest
-
-            echo "✅ Deployment complete! Running container list:"
+            echo "✅ Deployment complete! Running containers:"
             docker ps --filter "name=vynox-admin"
