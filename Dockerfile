@@ -5,9 +5,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Build-time arg for public environment variables
-ARG NEXT_PUBLIC_BASE_URL
-ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
+# # Build-time arg for public environment variables
+# ARG NEXT_PUBLIC_BASE_URL
+# ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
 
 COPY package*.json ./
 RUN npm ci
