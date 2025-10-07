@@ -50,7 +50,7 @@ jobs:
             ghcr.io/${{ secrets.GHCR_USERNAME }}/vynox-admin:latest
             ghcr.io/${{ secrets.GHCR_USERNAME }}/vynox-admin:${{ github.sha }}
           build-args: |
-            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+            NEXT_PUBLIC_BASE_URL=${{ secrets.NEXT_PUBLIC_BASE_URL }}
 
   # ===========================================
   # 2️⃣ Deploy to Remote Server via SSH
