@@ -13,7 +13,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build
+RUN echo "NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL" && npm run build
 
 # ==========================
 # 2️⃣ Final runtime image

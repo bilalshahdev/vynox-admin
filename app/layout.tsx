@@ -20,6 +20,9 @@ export default async function RootLayout({
 }>) {
   let error: string | null = null;
 
+  console.log("NEXT_PUBLIC_BASE_URL:", process.env.NEXT_PUBLIC_BASE_URL);
+
+
   if (!baseUrl) {
     error = "❌ No Base URL provided.";
   } else {
