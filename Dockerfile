@@ -5,15 +5,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Build-time args for public envs
-ARG NEXT_PUBLIC_BASE_URL
-ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
-
 COPY package*.json ./
 RUN npm ci
 
 COPY . .
-RUN echo "NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL" && npm run build
 
 # ==========================
 # 2️⃣ Final runtime image
