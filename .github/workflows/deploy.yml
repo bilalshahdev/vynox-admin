@@ -1,0 +1,36 @@
+name: 🚀 Deploy to Server (via SSH)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy Updated Container
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SSH into Server & Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/vynox-admin
+            echo "Pulling latest Docker image..."
+            docker pull ghcr.io/${{ secrets.GHCR_USERNAME }}/vynox-admin:latest
+            echo "Stopping old container..."
+            docker stop vynox-admin || true
+            docker rm vynox-admin || true
+            echo "Starting new container..."
+            docker run -d \
+              --name vynox-admin \
+              --env-file .env \
+              -p 2026:2026 \
+              ghcr.io/${{ secrets.GHCR_USERNAME }}/vynox-admin:latest
+            echo "✅ Deployment complete!"
