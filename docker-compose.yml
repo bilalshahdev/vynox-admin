@@ -1,6 +1,21 @@
+# services:
+#   vynox-admin:
+#     image: ghcr.io/bilalshahdev/vynox-admin:latest
+#     container_name: vynox-admin
+#     restart: unless-stopped
+#     ports:
+#       - "2026:2026"
+#     env_file:
+#       - .env
+
 services:
   vynox-admin:
-    image: ghcr.io/bilalshahdev/vynox-admin:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_BASE_URL: "https://server.guardxvpn.com"
+        BASE_URL: "https://server.guardxvpn.com"
     container_name: vynox-admin
     restart: unless-stopped
     ports:
