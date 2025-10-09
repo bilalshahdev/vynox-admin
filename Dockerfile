@@ -10,7 +10,8 @@ RUN npm ci
 
 COPY . .
 
-# Build Next.js app
+ARG NEXT_PUBLIC_BASE_URL
+ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
 RUN npm run build
 
 # ==========================
@@ -21,18 +22,12 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 # Copy build artifacts from builder
-COPY --from=builder /app/next.config.mjs ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/package*.json ./
-
-# Install only production dependencies
-RUN npm ci --omit=dev
-
-# Set environment variables for runtime
 ENV NODE_ENV=production
-ENV PORT=2026
+COPY --from=builder /app/package*.json ./
+RUN npm ci --omit=dev
+COPY --from=builder /app/.next .next
+COPY --from=builder /app/public ./public
 
-EXPOSE 2026
+EXPOSE 1112
 
 CMD ["npm", "start"]

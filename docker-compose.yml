@@ -1,12 +1,3 @@
-# services:
-#   vynox-admin:
-#     image: ghcr.io/bilalshahdev/vynox-admin:latest
-#     container_name: vynox-admin
-#     restart: unless-stopped
-#     ports:
-#       - "2026:2026"
-#     env_file:
-#       - .env
 
 services:
   vynox-admin:
