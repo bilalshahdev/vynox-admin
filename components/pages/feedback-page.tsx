@@ -10,6 +10,7 @@ import { Smartphone, Star, Tablet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "../DataTable";
 import Selectable from "../forms/fields/Selectable";
+import OSType from "../OSType";
 
 export default function FeedbackPage() {
   const [page, setPage] = useState(1);
@@ -43,39 +44,37 @@ export default function FeedbackPage() {
     return "bg-red-100 text-red-800";
   };
 
-  const cols = ["Rating", "Server", "os", "Reason", "Review", "Date"];
+  const cols = ["Review", "Reason", "Rating", "os", "Server", "Date"];
 
   const rows = (feedback: Feedback) => {
     return (
       <>
-        <TableCell className="flex items-center gap-2">
-          <Badge className={getRatingBadgeColor(feedback.rating)}>
-            <Star className="mr-1 h-3 w-3 fill-current" />
-            {feedback.rating}
-          </Badge>
-        </TableCell>
-        <TableCell className="font-medium">
-          {"..." + feedback.server_id.slice(-4)}
-        </TableCell>
-        <TableCell>
-          <div className="flex items-center gap-1">
-            {feedback.os_type === "android" ? (
-              <Smartphone className="h-4 w-4 text-green-600" />
-            ) : (
-              <Tablet className="h-4 w-4 text-blue-600" />
-            )}
-            <span className="capitalize">{feedback.os_type}</span>
-          </div>
-        </TableCell>
-        <TableCell>
-          <Badge variant="outline">{feedback.reason}</Badge>
-        </TableCell>
         <TableCell>
           <div className="max-w-xs truncate" title={feedback.review}>
             {feedback.review}
           </div>
+        </TableCell>{" "}
+        <TableCell>
+          <Badge variant="outline">{feedback.reason}</Badge>
         </TableCell>
-
+        <TableCell className="flex items-center gap-2">
+          {feedback.rating ? (
+            <Badge className={getRatingBadgeColor(feedback?.rating)}>
+              <Star className="mr-1 h-3 w-3 fill-current" />
+              {feedback.rating}
+            </Badge>
+          ) : (
+            "-"
+          )}
+        </TableCell>
+        <TableCell>
+          <OSType os_type={feedback.os_type} />
+        </TableCell>
+        {
+          <TableCell className="font-medium">
+            {feedback?.server_id ? "..." + feedback.server_id.slice(-4) : "-"}
+          </TableCell>
+        }
         <TableCell> {formatDateTimeNoYear(feedback.created_at)}</TableCell>
       </>
     );

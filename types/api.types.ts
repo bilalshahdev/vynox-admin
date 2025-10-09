@@ -159,12 +159,12 @@ export type GetAdByIdResponse = ApiSuccessItem<Ad>;
 /* ===== Feedback ===== */
 export interface Feedback {
   _id: string;
-  server_id: string;
+  server_id?: string;
   reason: string;
-  requested_server: string;
-  rating: number;
   review: string;
   os_type: OSType;
+  rating?: number;
+  requested_server?: string;
   created_at: ISODateString;
   updated_at: ISODateString;
 }
