@@ -26,13 +26,30 @@ jobs:
             -t ghcr.io/${{ secrets.GHCR_USERNAME }}/vynox-admin:latest .
           docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/vynox-admin:latest
 
-      - name: Deploy to VPS
+      - name: 🚀 Deploy on VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
-          username: root
+          username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "🔐 Logging into GHCR from VPS..."
+            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
+
             cd /opt/vynox-admin
+
+            echo "⚙️ Ensuring .env.production exists..."
+            if [ ! -f .env.production ]; then
+              echo "NEXT_PUBLIC_BASE_URL=${{ secrets.NEXT_PUBLIC_BASE_URL }}" > .env.production
+            fi
+
+            echo "⬇️ Pulling latest image..."
             docker compose -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.prod.yml up -d
+
+            echo "🚢 Redeploying container..."
+            docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
+
+            echo "🧹 Cleaning up old images..."
+            docker image prune -f
+
+            echo "✅ Deployment complete!"
