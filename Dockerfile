@@ -12,6 +12,9 @@ COPY . .
 
 ARG NEXT_PUBLIC_BASE_URL
 ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
+
+# print baseurl 
+RUN echo $NEXT_PUBLIC_BASE_URL 
 RUN npm run build
 
 # ==========================
