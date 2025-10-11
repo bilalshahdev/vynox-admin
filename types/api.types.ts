@@ -11,7 +11,7 @@ export type ISODateString = string;
 
 /* ===== Shared Enums ===== */
 export type OSType = "android" | "ios";
-export type ServerMode = "test" | "live";
+export type ServerMode = "test" | "live" | "off";
 export type ServerCategory = "gaming" | "streaming";
 
 export type AdType = string;

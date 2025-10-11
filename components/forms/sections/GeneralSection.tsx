@@ -273,6 +273,7 @@ export default function GeneralSection({
                 options={[
                   { value: "test", label: "Test" },
                   { value: "live", label: "Live" },
+                  { value: "off", label: "Off" },
                 ]}
                 value={field.value}
                 onChange={field.onChange}

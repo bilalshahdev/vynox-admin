@@ -11,7 +11,7 @@ export interface Server {
     city: string
     country_code: string
     is_pro: boolean
-    mode: "test" | "live"
+    mode: "test" | "live" | "off"
     ip: string
     latitude: number
     longitude: number

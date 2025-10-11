@@ -14,4 +14,5 @@ export const modeTypes = [
   { value: "all", label: "All Modes" },
   { value: "live", label: "Live" },
   { value: "test", label: "Test" },
+  { value: "off", label: "Off" },
 ];

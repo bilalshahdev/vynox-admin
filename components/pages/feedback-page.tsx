@@ -6,7 +6,7 @@ import { osTypes } from "@/config/options";
 import { useGetFeedback } from "@/hooks/useFeedbacks";
 import { Feedback } from "@/types/api.types";
 import formatDateTimeNoYear from "@/utils/formatDateTimeNoYear";
-import { Smartphone, Star, Tablet } from "lucide-react";
+import { Star } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "../DataTable";
 import Selectable from "../forms/fields/Selectable";
