@@ -13,23 +13,18 @@ import {
   useGetServer,
   useUpdateServer,
 } from "@/hooks/useServers";
-import { ServerFormValues, serverSchema } from "@/lib/validation"; // your existing export
+import { ServerFormValues, serverSchema } from "@/lib/validation";
 
 import GeneralSection from "./sections/GeneralSection";
 import OpenVPNSection from "./sections/OpenVPNSection";
 import WireGuardSection from "./sections/WireGuardSection";
 
-// optional: local defaults (keep simple)
 const defaultValues: ServerFormValues = {
   general: {
     name: "",
     ip: "",
-    country: "",
-    country_code: "",
-    flag: "",
-    city: "",
-    latitude: 0,
-    longitude: 0,
+    country_id: "",
+    city_id: "",
     categories: [],
     os_type: "android",
     is_pro: false,
@@ -68,13 +63,9 @@ export default function ServerForm({ id }: { id?: string }) {
       general: {
         name: server.name,
         categories: server.categories ?? [],
-        country: server.country,
-        country_code: server.country_code,
-        flag: server.flag,
-        city: server.city,
+        country_id: server.country_id ?? "",
+        city_id: server.city_id ?? "",
         ip: server.ip,
-        latitude: Number(server.latitude) || 0,
-        longitude: Number(server.longitude) || 0,
         os_type: server.os_type,
         is_pro: server.is_pro,
         mode: server.mode,
@@ -119,7 +110,11 @@ export default function ServerForm({ id }: { id?: string }) {
           </TabsList>
 
           <TabsContent value="general">
-            <GeneralSection control={control} />
+            <GeneralSection
+              control={control}
+              country={server?.country}
+              city={server?.city}
+            />
           </TabsContent>
 
           <TabsContent value="openvpn">

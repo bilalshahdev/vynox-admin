@@ -22,39 +22,24 @@ import { useMemo, useState } from "react";
 
 export default function GeneralSection({
   control,
+  country,
+  city,
 }: {
   control: Control<ServerFormValues>;
+  country?: string;
+  city?: string;
 }) {
   const values = useWatch({ control });
-  const {
-    country,
-    country_code,
-    city,
-    os_type,
-    mode,
-    categories = [],
-  } = values.general || {};
+  const {  os_type, mode, categories = [] } = values.general || {};
 
-  const { field: countryCodeField } = useController({
+  const { field: countryIdField } = useController({
     control,
-    name: "general.country_code",
+    name: "general.country_id",
   });
-  const { field: countryNameField } = useController({
+
+  const { field: cityIdField } = useController({
     control,
-    name: "general.country",
-  });
-  const { field: countryFlagField } = useController({
-    control,
-    name: "general.flag",
-  });
-  const { field: cityField } = useController({ control, name: "general.city" });
-  const { field: latField } = useController({
-    control,
-    name: "general.latitude",
-  });
-  const { field: lngField } = useController({
-    control,
-    name: "general.longitude",
+    name: "general.city_id",
   });
 
   // search states
@@ -65,19 +50,23 @@ export default function GeneralSection({
   const { data: countryRes } = useSearchCountries(countryQuery, 20);
   const countries: Country[] = countryRes?.data ?? [];
 
-  const { data: cityRes } = useSearchCities(cityQuery, 20, !!country_code);
+  const { data: cityRes } = useSearchCities(
+    cityQuery,
+    20,
+    !!countryIdField.value
+  );
   const allCities: City[] = useMemo(() => cityRes?.data ?? [], [cityRes?.data]);
 
   const cities = useMemo(
     () =>
-      country_code
+      countryIdField.value
         ? allCities.filter(
             (c) =>
               (typeof c.country === "string" ? c.country : c.country?._id) ===
-              country_code
+              countryIdField.value
           )
         : [],
-    [allCities, country_code]
+    [allCities, countryIdField.value]
   );
 
   // map to SearchSelectOptions
@@ -87,30 +76,18 @@ export default function GeneralSection({
   }));
 
   const cityOptions: SearchSelectOption[] = cities.map((ct) => ({
-    value: ct.name,
+    value: ct._id,
     label: ct.state ? `${ct.name} (${ct.state})` : ct.name,
   }));
 
-  // set flag also
-  const handleCountrySelect = (slug: string | null) => {
-    const c = countries.find((x) => x._id === slug);
-    if (c) {
-      countryCodeField.onChange(c._id);
-      countryNameField.onChange(c.name);
-      countryFlagField.onChange(c.flag);
-      cityField.onChange("");
-      latField.onChange(0);
-      lngField.onChange(0);
-    }
+
+  const handleCountrySelect = (id: string | null) => {
+    countryIdField.onChange(id ?? "");
+    cityIdField.onChange("");
   };
 
-  const handleCitySelect = (name: string | null) => {
-    const ct = allCities.find((x) => x.name === name);
-    if (ct) {
-      cityField.onChange(ct.name);
-      latField.onChange(Number(ct.latitude) || 0);
-      lngField.onChange(Number(ct.longitude) || 0);
-    }
+  const handleCitySelect = (id: string | null) => {
+    cityIdField.onChange(id ?? "");
   };
 
   const toggleCategory = (
@@ -150,7 +127,7 @@ export default function GeneralSection({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <SearchSelect
             control={control}
-            name="general.country_code"
+            name="general.country_id"
             label="Country"
             options={countryOptions}
             placeholder="Search country..."
@@ -162,38 +139,17 @@ export default function GeneralSection({
 
           <SearchSelect
             control={control}
-            name="general.city"
+            name="general.city_id"
             label="City"
             options={cityOptions}
             placeholder={
-              country_code ? "Search city..." : "Select country first"
+              countryIdField.value ? "Search city..." : "Select country first"
             }
             onSearchInput={setCityQuery}
             debounceMs={300}
             onValueSelect={handleCitySelect}
             selectedLabel={city}
-            disabled={!country_code}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <TextInput
-            control={control}
-            name="general.latitude"
-            label="Latitude"
-            type="number"
-            placeholder="50.1109"
-            disabled={!city}
-            readOnly
-          />
-          <TextInput
-            control={control}
-            name="general.longitude"
-            label="Longitude"
-            type="number"
-            placeholder="8.6821"
-            disabled={!city}
-            readOnly
+            disabled={!countryIdField.value}
           />
         </div>
 

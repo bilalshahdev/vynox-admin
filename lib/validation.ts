@@ -1,16 +1,13 @@
+// lib/validation.ts
+
 import { z } from "zod";
 
-// lib/validation.ts
 export const serverSchema = z.object({
   general: z.object({
     name: z.string(),
     ip: z.string(),
-    country: z.string(),
-    country_code: z.string(),
-    flag: z.string().optional(),
-    city: z.string(),
-    latitude: z.number(),
-    longitude: z.number(),
+    country_id: z.string().optional(), 
+    city_id: z.string().optional(),
     categories: z.array(z.string()),
     os_type: z.string(),
     is_pro: z.boolean(),

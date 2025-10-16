@@ -57,6 +57,8 @@ export interface ServerFlat {
   _id: string;
   name: string;
   categories: ServerCategory[];
+  country_id: string;
+  city_id: string;
   country: string;
   country_code: string;
   city: string;
