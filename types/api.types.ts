@@ -400,3 +400,16 @@ export interface City {
   created_at: string;
   updated_at: string;
 }
+
+export type RedisResetType =
+  | "servers"
+  | "ads"
+  | "cities"
+  | "countries"
+  | "connectivity"
+  | "dropdowns"
+  | "pages"
+  | "faq"
+  | "feedback"
+  | "dashboard"
+  | "meta";

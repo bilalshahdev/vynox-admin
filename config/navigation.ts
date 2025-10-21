@@ -2,6 +2,7 @@ import {
   Activity,
   BarChart3,
   Building2,
+  Database,
   FileText,
   Globe,
   HelpCircle,
@@ -61,6 +62,11 @@ const navigation = [
     name: "Dropdowns",
     href: "/dropdowns",
     icon: Settings,
+  },
+  {
+    name: "Redis",
+    href: "/redis",
+    icon: Database,
   },
 ];
 
