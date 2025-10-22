@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import Pagination from "./Pagination";
 import NoData from "./NoData";
 import TableSkeleton from "./TableSkeleton";
+import React from "react";
 
 type DataTableProps<T> = {
   data: T[];
@@ -32,6 +33,8 @@ type DataTableProps<T> = {
     limit: number | undefined;
     setPage: (page: number) => void;
   };
+  /** ✅ New: Support for custom children (toolbar, filters, etc.) */
+  children?: React.ReactNode;
 };
 
 export function DataTable<T>({
@@ -53,11 +56,15 @@ export function DataTable<T>({
     limit: 20,
     setPage: () => {},
   },
+  children,
 }: DataTableProps<T>) {
   const showEmpty = !isLoading && data.length === 0;
 
   return (
     <div className="flex flex-col gap-4 md:gap-8 h-full">
+      {/* ✅ render any custom top elements like filters, buttons, etc. */}
+      {children && <div className="w-full">{children}</div>}
+
       {isLoading ? (
         <TableSkeleton rows={10} />
       ) : showEmpty ? (

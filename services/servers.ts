@@ -75,3 +75,10 @@ export const updateWireguardConfig = async (
   const response = await api.patch(`/servers/${id}/wireguard-config`, data);
   return response.data;
 };
+
+export const deleteMultipleServers = async (ids: string[]) => {
+  const response = await api.delete("/servers/bulk", {
+    data: { ids },
+  });
+  return response.data;
+};

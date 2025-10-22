@@ -1,6 +1,7 @@
 // src/hooks/useServers.ts
 import {
   createServer,
+  deleteMultipleServers,
   deleteServer,
   getServer,
   getServers,
@@ -156,6 +157,21 @@ export const useUpdateWireguardConfig = () => {
     }) => updateWireguardConfig(id, data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["server", vars.id] });
+    },
+  });
+};
+
+/** DELETE MULTIPLE */
+export const useDeleteMultipleServers = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (ids: string[]) => deleteMultipleServers(ids),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["servers"] });
+      toast.success("Selected servers deleted successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Something went wrong");
     },
   });
 };

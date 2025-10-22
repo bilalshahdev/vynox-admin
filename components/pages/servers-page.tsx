@@ -1,13 +1,16 @@
-// app/ServersPage.tsx
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { TableCell } from "@/components/ui/table";
+import { TableCell, TableHead } from "@/components/ui/table";
 import { baseUrl } from "@/config/constants";
 import { modeTypes, osTypes } from "@/config/options";
-import { useDeleteServer, useGetServers } from "@/hooks/useServers";
+import {
+  useDeleteServer,
+  useDeleteMultipleServers,
+  useGetServers,
+} from "@/hooks/useServers";
 import { ServerFlat, ServerMode } from "@/types/api.types";
-import { Crown, Globe, Power, Search, TestTube } from "lucide-react";
+import { Crown, Globe, Power, Search, TestTube, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import TableActions from "../Actions";
@@ -15,6 +18,9 @@ import { DataTable } from "../DataTable";
 import OSType from "../OSType";
 import { SearchInput } from "../SearchInput";
 import Selectable from "../forms/fields/Selectable";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export function ServersPage() {
   const [page, setPage] = useState(1);
@@ -22,9 +28,14 @@ export function ServersPage() {
   const [modeFilter, setModeFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
 
+  // selection state
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
+
   useEffect(() => {
     setPage(1);
   }, [osFilter, modeFilter, searchTerm]);
+
   const query = useMemo(() => {
     return {
       page,
@@ -37,21 +48,72 @@ export function ServersPage() {
 
   const { data, isLoading } = useGetServers(query);
   const { mutateAsync: deleteServer } = useDeleteServer();
+  const { mutateAsync: deleteMultipleServers, isPending: isDeletingMultiple } =
+    useDeleteMultipleServers();
 
   const {
     pagination: { total = 0, limit = 20 } = { total: 0, limit: 20 },
     data: servers = [],
   } = data ?? { pagination: { total: 0, limit: 20 } };
 
+  // handle single delete
   const handleDeleteServer = async (serverId: string) => {
     await deleteServer(serverId);
   };
 
-  const cols = ["server", "location", "os", "mode", "pro", "ip", "actions"];
+  // handle bulk delete
+  const handleDeleteSelected = async () => {
+    if (selectedIds.length === 0) {
+      toast.warning("No servers selected");
+      return;
+    }
+    await deleteMultipleServers(selectedIds);
+    setSelectedIds([]);
+    setSelectAll(false);
+  };
+
+  // toggle single select
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id]
+    );
+  };
+
+  // toggle select all
+  const toggleSelectAll = () => {
+    if (selectAll) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(servers.map((s) => s._id));
+    }
+    setSelectAll(!selectAll);
+  };
+
+  const cols = [
+    "", // for checkbox
+    "server",
+    "location",
+    "os",
+    "mode",
+    "pro",
+    "ip",
+    "actions",
+  ];
 
   const rows = (server: ServerFlat) => {
+    const isSelected = selectedIds.includes(server._id);
+
     return (
       <>
+        {/* Checkbox */}
+        <TableCell>
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={() => toggleSelect(server._id)}
+          />
+        </TableCell>
+
+        {/* Server Name */}
         <TableCell className="font-medium">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-vynox-primary/10">
@@ -61,6 +123,7 @@ export function ServersPage() {
           </div>
         </TableCell>
 
+        {/* Location */}
         <TableCell>
           <div className="flex items-center gap-2">
             <Image
@@ -78,10 +141,12 @@ export function ServersPage() {
           </div>
         </TableCell>
 
+        {/* OS */}
         <TableCell>
           <OSType os_type={server.os_type} />
         </TableCell>
 
+        {/* Mode */}
         <TableCell>
           <Badge
             variant={server.mode === "live" ? "default" : "secondary"}
@@ -98,6 +163,7 @@ export function ServersPage() {
           </Badge>
         </TableCell>
 
+        {/* Pro / Free */}
         <TableCell>
           {server.is_pro ? (
             <Badge className="bg-yellow-100 text-yellow-800">
@@ -109,8 +175,10 @@ export function ServersPage() {
           )}
         </TableCell>
 
+        {/* IP */}
         <TableCell className="font-mono text-sm">{server.ip}</TableCell>
 
+        {/* Actions */}
         <TableCell className="text-right">
           <TableActions
             id={server._id}
@@ -125,6 +193,7 @@ export function ServersPage() {
 
   return (
     <div className="space-y-8 h-full">
+      {/* Filters */}
       <div className="flex rounded-lg flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-1 items-center gap-3">
           <div className="relative flex-1 max-w-md">
@@ -145,7 +214,6 @@ export function ServersPage() {
             value={osFilter}
             onChange={setOsFilter}
           />
-
           <Selectable
             options={modeTypes}
             value={modeFilter}
@@ -153,6 +221,8 @@ export function ServersPage() {
           />
         </div>
       </div>
+
+      {/* Table */}
       <DataTable
         data={servers}
         isLoading={isLoading}
@@ -164,7 +234,23 @@ export function ServersPage() {
           page,
           setPage,
         }}
-      />
+        headClassName="first:w-10"
+        headerClassName="relative"
+      >
+        <TableHead className="flex items-center justify-between gap-2">
+          <Checkbox checked={selectAll} onCheckedChange={toggleSelectAll} />
+          {selectedIds.length > 0 && (
+            <Button
+              variant="destructive"
+              onClick={handleDeleteSelected}
+              className="flex items-center gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Selected ({selectedIds.length})
+            </Button>
+          )}
+        </TableHead>
+      </DataTable>
     </div>
   );
 }
