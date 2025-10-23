@@ -10,7 +10,15 @@ import {
   useGetServers,
 } from "@/hooks/useServers";
 import { ServerFlat, ServerMode } from "@/types/api.types";
-import { Crown, Globe, Power, Search, TestTube, Trash2 } from "lucide-react";
+import {
+  BarChart,
+  Crown,
+  Globe,
+  Power,
+  Search,
+  TestTube,
+  Trash2,
+} from "lucide-react";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import TableActions from "../Actions";
@@ -21,6 +29,7 @@ import Selectable from "../forms/fields/Selectable";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export function ServersPage() {
   const [page, setPage] = useState(1);
@@ -176,7 +185,9 @@ export function ServersPage() {
         </TableCell>
 
         {/* IP */}
-        <TableCell className="font-mono text-sm">{server.ip}</TableCell>
+        <TableCell className="font-mono text-sm cursor-pointer underline text-blue-500">
+          <Link href={`/servers/${server.ip}/status`}>{server.ip}</Link>
+        </TableCell>
 
         {/* Actions */}
         <TableCell className="text-right">

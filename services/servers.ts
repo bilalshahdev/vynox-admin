@@ -1,4 +1,5 @@
 // services/servers.ts
+import { baseUrl } from "@/config/constants";
 import { api } from "@/lib/api";
 import { ServerFormValues } from "@/lib/validation";
 import type {
@@ -81,4 +82,9 @@ export const deleteMultipleServers = async (ids: string[]) => {
     data: { ids },
   });
   return response.data;
+};
+
+export const streamServerStatus = (ip: string) => {
+  const url = `${baseUrl}/api/v1/servers/status/${ip}`;
+  return new EventSource(url);
 };
