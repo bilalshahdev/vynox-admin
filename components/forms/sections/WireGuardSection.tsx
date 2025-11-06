@@ -26,15 +26,15 @@ const WireGuardSection = ({
       <CardContent className="space-y-4">
         <TextInput
           control={control}
-          name="wireguard_config.address"
-          label="Address"
-          placeholder="Enter address"
+          name="wireguard_config.url"
+          label="URL"
+          placeholder="Enter URL"
         />
         <TextInput
           control={control}
-          name="wireguard_config.config"
-          label="Config"
-          placeholder="Enter config"
+          name="wireguard_config.api_token"
+          label="API Token"
+          placeholder="Enter API Token"
           type="textarea"
         />
       </CardContent>

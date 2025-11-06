@@ -49,8 +49,8 @@ export interface OpenVPNConfig {
 }
 
 export interface WireguardConfig {
-  address?: string;
-  config?: string;
+  url?: string;
+  api_token?: string;
 }
 
 export interface ServerFlat {

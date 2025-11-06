@@ -20,7 +20,7 @@ export default function ServerStatusSkeleton() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {Array.from({ length: 2 }).map((_, i) => (
-          <div className="rounded-2xl border bg-card shadow-sm p-4">
+          <div key={i} className="rounded-2xl border bg-card shadow-sm p-4">
             <Skeleton className="h-5 w-40 mb-3" />
             <Skeleton className="h-[240px] w-full rounded-lg" />
           </div>

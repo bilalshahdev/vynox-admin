@@ -35,9 +35,10 @@ const defaultValues: ServerFormValues = {
     password: "",
     config: "",
   },
+
   wireguard_config: {
-    address: "",
-    config: "",
+    url: "",
+    api_token: "",
   },
 };
 
@@ -76,8 +77,8 @@ export default function ServerForm({ id }: { id?: string }) {
         config: server.openvpn_config?.config ?? "",
       },
       wireguard_config: {
-        address: server.wireguard_config?.address ?? "",
-        config: server.wireguard_config?.config ?? "",
+        url: server.wireguard_config?.url ?? "",
+        api_token: server.wireguard_config?.api_token ?? "",
       },
     });
   }, [server, reset]);

@@ -1,12 +1,12 @@
 // lib/validation.ts
 
-import { z } from "zod";
+import { object, z } from "zod";
 
 export const serverSchema = z.object({
   general: z.object({
     name: z.string(),
     ip: z.string(),
-    country_id: z.string().optional(), 
+    country_id: z.string().optional(),
     city_id: z.string().optional(),
     categories: z.array(z.string()),
     os_type: z.string(),
@@ -22,8 +22,8 @@ export const serverSchema = z.object({
     .optional(),
   wireguard_config: z
     .object({
-      address: z.string().optional(),
-      config: z.string().optional(),
+      url: z.string().optional(),
+      api_token: z.string().optional(),
     })
     .optional(),
 });

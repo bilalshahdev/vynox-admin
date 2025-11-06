@@ -90,7 +90,7 @@ const LoginForm = () => {
     if (remember) {
       try {
         let rawKey = localStorage.getItem(KEY_STORE);
-        let key = rawKey
+        const key = rawKey
           ? await secureCrypto.importRawKey(rawKey)
           : await secureCrypto.generateAesKey();
 

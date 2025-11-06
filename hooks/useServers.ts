@@ -11,7 +11,11 @@ import {
   updateServerProStatus,
   updateWireguardConfig,
 } from "@/services/servers";
-import { ListServersQuery, ServerMode } from "@/types/api.types";
+import {
+  ListServersQuery,
+  ServerMode,
+  WireguardConfig,
+} from "@/types/api.types";
 import {
   keepPreviousData,
   useMutation,
@@ -148,13 +152,8 @@ export const useUpdateOpenVpnConfig = () => {
 export const useUpdateWireguardConfig = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: { address?: string; config?: string };
-    }) => updateWireguardConfig(id, data),
+    mutationFn: ({ id, data }: { id: string; data: WireguardConfig }) =>
+      updateWireguardConfig(id, data),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ["server", vars.id] });
     },

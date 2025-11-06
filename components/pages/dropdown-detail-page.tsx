@@ -135,19 +135,18 @@ export default function DropdownDetails({ id }: { id: string }) {
               onConfirm={handleDelete}
               loading={isPending}
               variant="destructive"
-              children={
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  disabled={!doc?._id || isPending}
-                  aria-label="Delete dropdown"
-                >
-                  <Trash2
-                    className={`h-4 w-4 ${isPending ? "animate-pulse" : ""}`}
-                  />
-                </Button>
-              }
-            />
+            >
+              <Button
+                variant="destructive"
+                size="icon"
+                disabled={!doc?._id || isPending}
+                aria-label="Delete dropdown"
+              >
+                <Trash2
+                  className={`h-4 w-4 ${isPending ? "animate-pulse" : ""}`}
+                />
+              </Button>
+            </ConfirmDialog>
           </div>
         </div>
       </div>

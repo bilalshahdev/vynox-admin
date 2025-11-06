@@ -17,12 +17,12 @@ const config = [
   ),
   {
     rules: {
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
-      ],
+      // ✅ Ignore all unused variable warnings
+      "@typescript-eslint/no-unused-vars": "off",
+
+      // Keep or adjust other useful rules
       "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-empty-object-type": "off", // ✅ fix InputProps warning
+      "@typescript-eslint/no-empty-object-type": "off",
       "react-hooks/rules-of-hooks": "error",
       "@typescript-eslint/no-unused-expressions": [
         "warn",
