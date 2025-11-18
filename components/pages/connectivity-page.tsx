@@ -14,12 +14,20 @@ import Selectable from "../forms/fields/Selectable";
 export function ConnectivityPage() {
   const [page, setPage] = useState(1);
   const [osFilter, setOsFilter] = useState<string>("all");
-  const [modeFilter, setModeFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
+    const storedOs = localStorage.getItem("osFilter");
+    if (storedOs) setOsFilter(storedOs);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("osFilter", osFilter);
+  }, [osFilter]);
+
+  useEffect(() => {
     setPage(1);
-  }, [osFilter, modeFilter, searchTerm]);
+  }, [osFilter, searchTerm]);
 
   const query = useMemo(() => {
     return {

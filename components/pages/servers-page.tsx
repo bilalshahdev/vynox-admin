@@ -45,6 +45,15 @@ export function ServersPage() {
     setPage(1);
   }, [osFilter, modeFilter, searchTerm]);
 
+  useEffect(() => {
+    const storedOs = localStorage.getItem("osFilter");
+    if (storedOs) setOsFilter(storedOs);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("osFilter", osFilter);
+  }, [osFilter]);
+
   const query = useMemo(() => {
     return {
       page,
