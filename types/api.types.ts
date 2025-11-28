@@ -53,6 +53,13 @@ export interface WireguardConfig {
   api_token?: string;
 }
 
+export interface XRayConfig {
+  shadowsocks?: string;
+  vless?: string;
+  vmess?: string;
+  torjan?: string;
+}
+
 export interface ServerFlat {
   _id: string;
   name: string;
@@ -77,6 +84,7 @@ export interface ServerFlat {
 export interface ServerDetail extends ServerFlat {
   openvpn_config?: OpenVPNConfig | null;
   wireguard_config?: WireguardConfig | null;
+  xray_config?: XRayConfig | null;
 }
 
 /** Grouped list item */
@@ -116,6 +124,7 @@ export type ServerDoc = {
   general: General;
   openvpn_config?: OpenVPNConfig | null;
   wireguard_config?: WireguardConfig | null;
+  xray_config?: XRayConfig | null;
   created_at: ISODateString;
   updated_at: ISODateString;
 };

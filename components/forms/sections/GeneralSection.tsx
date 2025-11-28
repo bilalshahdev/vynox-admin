@@ -30,7 +30,7 @@ export default function GeneralSection({
   city?: string;
 }) {
   const values = useWatch({ control });
-  const {  os_type, mode, categories = [] } = values.general || {};
+  const { categories = [] } = values.general || {};
 
   const { field: countryIdField } = useController({
     control,

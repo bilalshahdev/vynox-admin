@@ -1,7 +1,6 @@
 // lib/validation.ts
 
-import { object, z } from "zod";
-
+import { z } from "zod";
 export const serverSchema = z.object({
   general: z.object({
     name: z.string(),
@@ -24,6 +23,14 @@ export const serverSchema = z.object({
     .object({
       url: z.string().optional(),
       api_token: z.string().optional(),
+    })
+    .optional(),
+  xray_config: z
+    .object({
+      shadowsocks: z.string().optional(),
+      vless: z.string().optional(),
+      vmess: z.string().optional(),
+      torjan: z.string().optional(),
     })
     .optional(),
 });

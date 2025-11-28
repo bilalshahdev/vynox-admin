@@ -18,6 +18,7 @@ import { ServerFormValues, serverSchema } from "@/lib/validation";
 import GeneralSection from "./sections/GeneralSection";
 import OpenVPNSection from "./sections/OpenVPNSection";
 import WireGuardSection from "./sections/WireGuardSection";
+import XRaySection from "./sections/XRaySection";
 
 const defaultValues: ServerFormValues = {
   general: {
@@ -35,10 +36,15 @@ const defaultValues: ServerFormValues = {
     password: "",
     config: "",
   },
-
   wireguard_config: {
     url: "",
     api_token: "",
+  },
+  xray_config: {
+    shadowsocks: "",
+    vless: "",
+    vmess: "",
+    torjan: "",
   },
 };
 
@@ -80,6 +86,12 @@ export default function ServerForm({ id }: { id?: string }) {
         url: server.wireguard_config?.url ?? "",
         api_token: server.wireguard_config?.api_token ?? "",
       },
+      xray_config: {
+        shadowsocks: server.xray_config?.shadowsocks ?? "",
+        vless: server.xray_config?.vless ?? "",
+        vmess: server.xray_config?.vmess ?? "",
+        torjan: server.xray_config?.torjan ?? "",
+      },
     });
   }, [server, reset]);
 
@@ -104,10 +116,11 @@ export default function ServerForm({ id }: { id?: string }) {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-full">
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="openvpn">OpenVPN</TabsTrigger>
             <TabsTrigger value="wireguard">WireGuard</TabsTrigger>
+            <TabsTrigger value="xray">XRay</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general">
@@ -124,6 +137,10 @@ export default function ServerForm({ id }: { id?: string }) {
 
           <TabsContent value="wireguard">
             <WireGuardSection control={control} />
+          </TabsContent>
+
+          <TabsContent value="xray">
+            <XRaySection control={control} />
           </TabsContent>
         </Tabs>
 
