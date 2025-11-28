@@ -32,17 +32,16 @@ const ValueSchema = z.object({
     .max(64, "Too long")
     .regex(/^[a-z0-9-_]+$/, "Use lowercase, digits, hyphen or underscore"),
 });
-
+const camelCaseRegex = /^[a-z]+([A-Z][a-z0-9]+)*$/;
 const DropdownSchema = z.object({
   name: z
     .string({ required_error: "Key name is required" })
     .trim()
     .min(2, "At least 2 chars")
     .max(64, "Too long")
-    .regex(
-      /^[a-z0-9][a-z0-9-_]*$/,
-      "Use lowercase/digits, start with letter/digit"
-    ),
+    .refine((val) => camelCaseRegex.test(val), {
+      message: "Must be camelCase",
+    }),
   values: z.array(ValueSchema).min(1, "Add at least one value"),
 });
 
@@ -85,7 +84,7 @@ export default function DropdownForm({ id }: { id?: string }) {
 
   const onSubmit = async (values: DropdownFormValues) => {
     const payload = {
-      name: values.name.trim().toLowerCase(),
+      name: values.name.trim(),
       values: values.values.map((v) => ({
         name: v.name.trim(),
         value: v.value.trim().toLowerCase(),
@@ -99,6 +98,11 @@ export default function DropdownForm({ id }: { id?: string }) {
     }
     startTransition(() => router.replace("/dropdowns"));
   };
+
+  console.log({
+    pending,
+    formStateIsValid: formState.isValid,
+  });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
