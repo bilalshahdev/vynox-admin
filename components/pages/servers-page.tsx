@@ -3,13 +3,13 @@
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableHead } from "@/components/ui/table";
 import { baseUrl } from "@/config/constants";
-import { modeTypes, osTypes } from "@/config/options";
+import { modeTypes, osTypes, protocolTypes } from "@/config/options";
 import {
   useDeleteServer,
   useDeleteMultipleServers,
   useGetServers,
 } from "@/hooks/useServers";
-import { ServerFlat, ServerMode } from "@/types/api.types";
+import { Protocol, ServerFlat, ServerMode } from "@/types/api.types";
 import {
   BarChart,
   Crown,
@@ -35,6 +35,7 @@ export function ServersPage() {
   const [page, setPage] = useState(1);
   const [osFilter, setOsFilter] = useState<string>("all");
   const [modeFilter, setModeFilter] = useState<string>("all");
+  const [protocolFilter, setProtocolFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
 
   // selection state
@@ -60,9 +61,10 @@ export function ServersPage() {
       limit: 20,
       os_type: osFilter === "all" ? undefined : (osFilter as "android" | "ios"),
       mode: modeFilter === "all" ? undefined : (modeFilter as ServerMode),
+      protocol: protocolFilter === "all" ? undefined : (protocolFilter as Protocol),
       search: searchTerm || undefined,
     };
-  }, [page, osFilter, modeFilter, searchTerm]);
+  }, [page, osFilter, modeFilter, protocolFilter, searchTerm]);
 
   const { data, isLoading } = useGetServers(query);
   const { mutateAsync: deleteServer } = useDeleteServer();
@@ -113,6 +115,7 @@ export function ServersPage() {
     "location",
     "os",
     "mode",
+    "protocol",
     "pro",
     "ip",
     "actions",
@@ -181,6 +184,11 @@ export function ServersPage() {
           </Badge>
         </TableCell>
 
+        {/* Protocol */}
+        <TableCell>
+          {server?.protocol ?? "-"}
+        </TableCell>
+
         {/* Pro / Free */}
         <TableCell>
           {server.is_pro ? (
@@ -233,6 +241,11 @@ export function ServersPage() {
             options={osTypes}
             value={osFilter}
             onChange={setOsFilter}
+          />
+          <Selectable
+            options={protocolTypes}
+            value={protocolFilter}
+            onChange={setProtocolFilter}
           />
           <Selectable
             options={modeTypes}

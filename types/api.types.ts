@@ -76,6 +76,7 @@ export interface ServerFlat {
   latitude: number;
   longitude: number;
   os_type: OSType;
+  protocol?: Protocol;
   created_at: ISODateString;
   updated_at: ISODateString;
 }
@@ -95,6 +96,7 @@ export interface GroupedServer {
   servers: ServerFlat[];
 }
 
+export type Protocol = "openvpn" | "wireguard" | "xray";
 interface General {
   name: string;
   categories: ServerCategory[];
@@ -133,6 +135,7 @@ export type ServerDoc = {
 export interface ListServersQuery {
   os_type?: OSType;
   mode?: ServerMode;
+  protocol?: Protocol;
   search?: string;
   page?: number;
   limit?: number;

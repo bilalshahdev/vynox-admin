@@ -31,6 +31,7 @@ export const useGetServers = ({
   os_type,
   mode,
   search,
+  protocol,
 }: ListServersQuery) =>
   useQuery({
     queryKey: [
@@ -40,8 +41,9 @@ export const useGetServers = ({
       os_type ?? "all",
       mode ?? "all",
       search ?? "",
+      protocol ?? "all",
     ],
-    queryFn: () => getServers({ page, limit, os_type, mode, search }),
+    queryFn: () => getServers({ page, limit, os_type, mode, search, protocol }),
     placeholderData: keepPreviousData,
   });
 

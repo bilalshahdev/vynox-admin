@@ -4,6 +4,13 @@ export const osTypes = [
   { value: "ios", label: "iOS" },
 ];
 
+export const protocolTypes = [
+  { value: "all", label: "All Protocols" },
+  { value: "openvpn", label: "OpenVPN" },
+  { value: "wireguard", label: "WireGuard" },
+  { value: "xray", label: "XRay" },
+];
+
 export const statusTypes = [
   { value: "all", label: "All Status" },
   { value: "true", label: "Active" },
