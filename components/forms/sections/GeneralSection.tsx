@@ -24,10 +24,14 @@ export default function GeneralSection({
   control,
   country,
   city,
+  setCountry,
+  setCity,
 }: {
   control: Control<ServerFormValues>;
   country?: string;
   city?: string;
+  setCountry: any,
+  setCity: any,
 }) {
   const values = useWatch({ control });
   const { categories = [] } = values.general || {};
@@ -61,10 +65,10 @@ export default function GeneralSection({
     () =>
       countryIdField.value
         ? allCities.filter(
-            (c) =>
-              (typeof c.country === "string" ? c.country : c.country?._id) ===
-              countryIdField.value
-          )
+          (c) =>
+            (typeof c.country === "string" ? c.country : c.country?._id) ===
+            countryIdField.value
+        )
         : [],
     [allCities, countryIdField.value]
   );
@@ -81,14 +85,27 @@ export default function GeneralSection({
   }));
 
 
-  const handleCountrySelect = (id: string | null) => {
+  // const handleCountrySelect = (id: string | null) => {
+  //   countryIdField.onChange(id ?? "");
+  //   cityIdField.onChange("");
+  // };
+
+  // const handleCitySelect = (id: string | null) => {
+  //   cityIdField.onChange(id ?? "");
+  // };
+
+  const handleCountrySelect = (id: string | null, label: string) => {
     countryIdField.onChange(id ?? "");
+    setCountry(label);   // <-- store label so it persists
     cityIdField.onChange("");
+    setCity("");
   };
 
-  const handleCitySelect = (id: string | null) => {
+  const handleCitySelect = (id: string | null, label: string) => {
     cityIdField.onChange(id ?? "");
+    setCity(label);      // <-- store label so it persists
   };
+
 
   const toggleCategory = (
     cat: "gaming" | "streaming",
@@ -132,25 +149,27 @@ export default function GeneralSection({
             options={countryOptions}
             placeholder="Search country..."
             onSearchInput={setCountryQuery}
-            debounceMs={300}
-            onValueSelect={handleCountrySelect}
-            selectedLabel={country}
+            onValueSelect={(id) => {
+              const label = countryOptions.find(c => c.value === id)?.label || "";
+              handleCountrySelect(id, label);
+            }}
+            selectedLabel={country}   // <-- Persisted label
           />
-
           <SearchSelect
             control={control}
             name="general.city_id"
             label="City"
             options={cityOptions}
-            placeholder={
-              countryIdField.value ? "Search city..." : "Select country first"
-            }
+            placeholder="Search city..."
             onSearchInput={setCityQuery}
-            debounceMs={300}
-            onValueSelect={handleCitySelect}
-            selectedLabel={city}
+            onValueSelect={(id) => {
+              const label = cityOptions.find(c => c.value === id)?.label || "";
+              handleCitySelect(id, label);
+            }}
+            selectedLabel={city}     // <-- Persisted label
             disabled={!countryIdField.value}
           />
+
         </div>
 
         {/* Categories */}

@@ -60,8 +60,8 @@ export default function SearchSelect({
     query === ""
       ? options
       : options.filter((opt) =>
-          opt.label.toLowerCase().includes(query.toLowerCase())
-        );
+        opt.label.toLowerCase().includes(query.toLowerCase())
+      );
 
   return (
     <Controller
@@ -69,7 +69,7 @@ export default function SearchSelect({
       control={control}
       render={({ field }) => {
         const sel = options.find((o) => o.value === field.value) || null;
-        const display = sel?.label ?? selectedLabel ?? "";
+        const display = selectedLabel || sel?.label || "";
 
         return (
           <div className="space-y-1">
@@ -113,8 +113,7 @@ export default function SearchSelect({
                         key={opt.value}
                         value={opt.value}
                         className={({ focus }) =>
-                          `cursor-pointer px-3 py-2 text-sm ${
-                            focus ? "bg-blue-600 text-white" : "text-gray-900"
+                          `cursor-pointer px-3 py-2 text-sm ${focus ? "bg-blue-600 text-white" : "text-gray-900"
                           }`
                         }
                       >

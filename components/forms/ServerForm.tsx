@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { startTransition, useEffect } from "react";
+import { startTransition, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -112,6 +112,17 @@ export default function ServerForm({ id }: { id?: string }) {
     }
   };
 
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
+
+  useEffect(() => {
+    if (server) {
+      setCountry(server.country || "");
+      setCity(server.city || "");
+    }
+  }, [server]);
+
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-full">
@@ -126,8 +137,10 @@ export default function ServerForm({ id }: { id?: string }) {
           <TabsContent value="general">
             <GeneralSection
               control={control}
-              country={server?.country}
-              city={server?.city}
+              country={country}
+              city={city}
+              setCountry={setCountry}
+              setCity={setCity}
             />
           </TabsContent>
 

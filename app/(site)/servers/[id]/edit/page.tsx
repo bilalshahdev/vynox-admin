@@ -2,7 +2,6 @@
 
 import Container from "@/components/Container";
 import ServerForm from "@/components/forms/ServerForm";
-import React from "react";
 
 const EditServerPage = async ({
   params,
