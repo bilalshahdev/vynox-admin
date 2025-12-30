@@ -1,35 +1,35 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { TableCell, TableHead } from "@/components/ui/table";
 import { baseUrl } from "@/config/constants";
 import { modeTypes, osTypes, protocolTypes } from "@/config/options";
 import {
-  useDeleteServer,
   useDeleteMultipleServers,
+  useDeleteServer,
   useGetServers,
+  useUpdateServerProStatus,
 } from "@/hooks/useServers";
 import { Protocol, ServerFlat, ServerMode } from "@/types/api.types";
 import {
-  BarChart,
-  Crown,
   Globe,
   Power,
   Search,
   TestTube,
-  Trash2,
+  Trash2
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import TableActions from "../Actions";
 import { DataTable } from "../DataTable";
 import OSType from "../OSType";
 import { SearchInput } from "../SearchInput";
 import Selectable from "../forms/fields/Selectable";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import Link from "next/link";
 
 export function ServersPage() {
   const [page, setPage] = useState(1);
@@ -67,8 +67,9 @@ export function ServersPage() {
   }, [page, osFilter, modeFilter, protocolFilter, searchTerm]);
 
   const { data, isLoading } = useGetServers(query);
+  const { mutate: updateProStatus, isPending: updatingPro } = useUpdateServerProStatus();
   const { mutateAsync: deleteServer } = useDeleteServer();
-  const { mutateAsync: deleteMultipleServers, isPending: isDeletingMultiple } =
+  const { mutateAsync: deleteMultipleServers } =
     useDeleteMultipleServers();
 
   const {
@@ -191,14 +192,24 @@ export function ServersPage() {
 
         {/* Pro / Free */}
         <TableCell>
-          {server.is_pro ? (
-            <Badge className="bg-yellow-100 text-yellow-800">
-              <Crown className="mr-1 h-3 w-3" />
-              Pro
-            </Badge>
-          ) : (
-            <Badge variant="outline">Free</Badge>
-          )}
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={server.is_pro}
+              disabled={updatingPro}
+              onCheckedChange={(checked) =>
+                updateProStatus({
+                  id: server._id,
+                  is_pro: Boolean(checked),
+                })
+              }
+            />
+
+            {server.is_pro ? (
+              <span className="text-yellow-700 font-medium">Pro</span>
+            ) : (
+              <span className="text-muted-foreground">Free</span>
+            )}
+          </div>
         </TableCell>
 
         {/* IP */}
